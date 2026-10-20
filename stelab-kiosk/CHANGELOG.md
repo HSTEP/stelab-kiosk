@@ -1,3 +1,18 @@
+# 0.1.0-rc.2
+
+- Preserve existing Chromium Preferences, Local State, cookies, site storage,
+  service workers and bookmarks. Initialize a new profile only once.
+- Request graceful Browser.close before stopping Xorg, with bounded SIGTERM
+  fallback restricted to the current container's browser/profile/debug port.
+- Allow TCP TIME_WAIT after restart without bypassing a real port conflict.
+- Include the missing AT-SPI Python typelib for Onboard; remove the unused
+  Debian menu reference. Existing graphics/input/audio settings are retained.
+- Test real persistent cookies and localStorage across two Chromium launches
+  inside the built ARM64 image before an image is uploaded or published.
+
+Google website login must still be verified on the user's device after updating.
+This does not enable proprietary Google Chrome Sync in Chromium.
+
 # 0.1.0-rc.1
 
 First experimental STELAB release candidate, based on the supplied functioning

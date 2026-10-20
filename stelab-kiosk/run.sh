@@ -74,6 +74,10 @@ cleanup() {
     if [ "${SAVE_ONSCREEN_CONFIG:-false}" = true ] && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
         dconf dump /org/onboard/ > "$ONBOARD_CONFIG_FILE" || true
     fi
+    # Let Chromium flush Preferences and cookies while Xorg and session D-Bus live.
+    if [ "${BROWSER_STARTED:-false}" = true ]; then
+        python3 /browser_profile.py close --profile "$CHROMIUM_PROFILE_DIR" --port "$CHROMIUM_DEVTOOLS_PORT" || true
+    fi
     jobs -p | xargs -r kill
     exit "$exit_code"
 }
@@ -182,17 +186,9 @@ export CHROMIUM_ANGLE_BACKEND
 
 # Shared host networking makes these ports a useful conflict check.
 # This complements the required manual stop; it is not a global display lock.
-python3 - <<'PREFLIGHT'
-import os, socket, sys
-for port in {int(os.environ['REST_PORT']), int(os.environ['CHROMIUM_DEVTOOLS_PORT'])}:
-    with socket.socket() as sock:
-        try:
-            sock.bind(('127.0.0.1', port))
-        except OSError:
-            print(f"Port {port} is occupied. Stop the old kiosk before starting STELAB.", file=sys.stderr)
-            sys.exit(1)
-PREFLIGHT
-if [ "$?" -ne 0 ]; then exit 1; fi
+if ! python3 /startup_ports.py "$REST_PORT" "$CHROMIUM_DEVTOOLS_PORT"; then
+    exit 1
+fi
 mkdir -p /config/scripts /config/files /media/screenshots
 chmod 700 /config/scripts /config/files
 
@@ -249,72 +245,9 @@ browser_process_running() {
     pgrep -x -- "$BROWSER_PROCESS_MATCH" > /dev/null 2>&1
 }
 
-clear_chromium_runtime_cache() {
-    [ "$BROWSER_ENGINE" = "chromium" ] || return 0
-
-    mkdir -p "$CHROMIUM_PROFILE_DIR"
-
-    local cache_paths=(
-        "$CHROMIUM_PROFILE_DIR/Cache"
-        "$CHROMIUM_PROFILE_DIR/Code Cache"
-        "$CHROMIUM_PROFILE_DIR/GPUCache"
-        "$CHROMIUM_PROFILE_DIR/DawnCache"
-        "$CHROMIUM_PROFILE_DIR/GrShaderCache"
-        "$CHROMIUM_PROFILE_DIR/ShaderCache"
-        "$CHROMIUM_PROFILE_DIR/Default/Cache"
-        "$CHROMIUM_PROFILE_DIR/Default/Code Cache"
-        "$CHROMIUM_PROFILE_DIR/Default/GPUCache"
-        "$CHROMIUM_PROFILE_DIR/Default/DawnCache"
-        "$CHROMIUM_PROFILE_DIR/Default/GrShaderCache"
-        "$CHROMIUM_PROFILE_DIR/Default/Service Worker"
-    )
-
-    local cache_path
-    for cache_path in "${cache_paths[@]}"; do
-        rm -rf "$cache_path"
-    done
-}
-
 seed_chromium_preferences() {
     [ "$BROWSER_ENGINE" = "chromium" ] || return 0
-
-    local default_dir="$CHROMIUM_PROFILE_DIR/Default"
-    mkdir -p "$default_dir"
-
-    cat > "$default_dir/Preferences" <<'EOF'
-{
-  "autofill": {
-    "enabled": false
-  },
-  "browser": {
-    "check_default_browser": false,
-    "has_seen_welcome_page": true
-  },
-  "credentials_enable_service": false,
-  "distribution": {
-    "import_bookmarks": false,
-    "import_history": false,
-    "import_search_engine": false,
-    "make_chrome_default_for_user": false,
-    "skip_first_run_ui": true
-  },
-  "profile": {
-    "default_content_setting_values": {
-      "notifications": 2
-    },
-    "password_manager_enabled": false
-  },
-  "safebrowsing": {
-    "enabled": false
-  },
-  "sync_promo": {
-    "show_on_first_run_allowed": false
-  },
-  "translate": {
-    "enabled": false
-  }
-}
-EOF
+    python3 /browser_profile.py init --profile "$CHROMIUM_PROFILE_DIR"
 }
 
 resolve_browser_binary
@@ -490,6 +423,8 @@ mkdir -p ~/.config/openbox
 RC_XML=~/.config/openbox/rc.xml
 cp -a /etc/xdg/openbox/rc.xml "$RC_XML"
 cp /etc/xdg/openbox/stelab-menu.xml ~/.config/openbox/menu.xml
+# Only load the supplied menu; Debian's optional generated menu is not installed.
+sed -i '\|<file>/var/lib/openbox/debian-menu.xml</file>|d' "$RC_XML"
 # Delete selected old key bindings
 awk 'BEGIN{skip=0} /<keybind key="(C-A-Left|C-A-Right|W-d|W-e|W-Return|W-Up|W-Down|C-A-o|C-A-k)">/{skip=1} /<\/keybind>/ && skip{skip=0; next} !skip{print}' "$RC_XML" > /tmp/rc.new.xml
 mv /tmp/rc.new.xml "$RC_XML"
@@ -803,10 +738,10 @@ if [ "$DEBUG_MODE" != true ]; then
     if [ "$BROWSER_ENGINE" = "chromium" ]; then
         mkdir -p "$CHROMIUM_PROFILE_DIR"
         rm -f "$CHROMIUM_PROFILE_DIR"/Singleton*
-        clear_chromium_runtime_cache
         seed_chromium_preferences
     fi
 
+    BROWSER_STARTED=true
     "$BROWSER" "${BROWSER_FLAGS[@]}" "$HA_URL/$HA_DASHBOARD" &
     bashio::log.info "Launching $BROWSER browser(PID=$!): $HA_URL/$HA_DASHBOARD"
 

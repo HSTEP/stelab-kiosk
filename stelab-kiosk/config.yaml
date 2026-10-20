@@ -1,7 +1,7 @@
 {
   "name": "STELAB Kiosk",
   "description": "Debian desktop kiosk for Raspberry Pi 5: Chromium, Openbox, terminal and file manager.",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "slug": "stelab_kiosk",
   "arch": [
     "aarch64"
@@ -144,5 +144,6 @@
   "stage": "experimental",
   "udev": true,
   "url": "https://github.com/HSTEP/stelab-kiosk",
-  "image": "ghcr.io/hstep/stelab-kiosk-{arch}"
+  "image": "ghcr.io/hstep/stelab-kiosk-{arch}",
+  "timeout": 45
 }

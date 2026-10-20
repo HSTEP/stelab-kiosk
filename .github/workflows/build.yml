@@ -48,6 +48,17 @@ jobs:
           build-args: |
             BUILD_FROM=${{ steps.meta.outputs.base }}
             BUILD_VERSION=${{ steps.meta.outputs.version }}
+      - name: Load candidate for persistence test
+        run: docker load --input /tmp/stelab-kiosk-arm64.tar
+      - name: Verify real Chromium profile across restart
+        timeout-minutes: 5
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          docker run --rm --platform linux/arm64 --entrypoint python3 \
+            -v "${GITHUB_WORKSPACE}/tests:/tests:ro" \
+            "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}" \
+            /tests/smoke_browser_profile.py
       - uses: actions/upload-artifact@v4
         with:
           name: stelab-kiosk-arm64-${{ steps.meta.outputs.version }}

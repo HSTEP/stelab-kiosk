@@ -10,7 +10,7 @@ permissions:
   contents: read
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main' && inputs.confirmation == 'PUBLISH'
+    if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')) && inputs.confirmation == 'PUBLISH'
     runs-on: ubuntu-latest
     environment: release
     permissions:
@@ -51,15 +51,30 @@ jobs:
             echo 'This tag already exists. Increase VERSION and config.yaml version.' >&2
             exit 1
           fi
-      - name: Build and publish ARM64
+      - name: Build ARM64 candidate
         uses: docker/build-push-action@v6
         with:
           context: ./stelab-kiosk
           platforms: linux/arm64
           pull: true
           no-cache: true
-          push: true
+          push: false
+          load: true
+          provenance: false
           tags: ghcr.io/hstep/stelab-kiosk-aarch64:${{ steps.meta.outputs.version }}
           build-args: |
             BUILD_FROM=${{ steps.meta.outputs.base }}
             BUILD_VERSION=${{ steps.meta.outputs.version }}
+      - name: Verify real Chromium profile across restart
+        timeout-minutes: 5
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          docker run --rm --platform linux/arm64 --entrypoint python3 \
+            -v "${GITHUB_WORKSPACE}/tests:/tests:ro" \
+            "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}" \
+            /tests/smoke_browser_profile.py
+      - name: Publish the tested image
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: docker push "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}"

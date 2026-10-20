@@ -15,6 +15,20 @@ prošla; anonymně ověřen manifest ARM64 a čtení ze všech 12 vrstev obrazu.
 Hardware Raspberry Pi 5 — skutečná akcelerace, HDMI zvuk, touch a Bluetooth —
 zatím otestovaný není. Na Home Assistantu nebyla provedena žádná změna.
 
+## Připravovaná oprava 0.1.0-rc.2
+
+Tato přípravná větev opravuje reset Preferences a mazání části dat webů při
+startu. Profil zůstává v `/config/chromium-profile`, včetně Local State a cookies.
+Před vypnutím Xorgu dostane Chromium čas řádně ukončit a zapsat data.
+Kontrola portů zohledňuje TCP TIME_WAIT; skutečný druhý kiosk zůstává blokovaný.
+AT-SPI typelib pro Onboard je součástí obrazu. GPU parametry se nemění.
+
+Po aktualizaci bude případně potřeba přihlásit se na Google/YouTube jednou znovu;
+následně ověřit zavření/otevření Chromia, restart doplňku i zachování přihlášení.
+Přihlášení k webům není zapnutí proprietární synchronizace Google Chrome.
+Při běžném prohlížení webů je vhodné `browser_refresh: 0`, aby se po deseti
+minutách nepřerušovalo sledování YouTube (v zaslané konfiguraci bylo 600).
+
 ## Přidání do Home Assistantu
 
 V obchodě s doplňky otevři **⋮ → Repozitáře** a přidej:
