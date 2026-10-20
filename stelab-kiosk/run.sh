@@ -161,6 +161,7 @@ load_config_var COMMAND_WHITELIST "^$"  # Default is no commands allowed
 load_config_var TOUCH_DEBUG_LEVEL 1
 load_config_var DEBUG_MODE false
 load_config_var VNC_SERVER ""  1 #Mask password in log
+load_config_var REMOTE_ACCESS false
 
 # Validate environment variables set by config.yaml
 if [ -z "$HA_USERNAME" ] || [ -z "$HA_PASSWORD" ]; then
@@ -703,7 +704,20 @@ python3 -u /mouse_touch_inputs.py -d "$TOUCH_DEBUG_LEVEL" -w "$COMMAND_WHITELIST
 bashio::log.info "Starting HAOSKiosk REST server..."
 python3 -u /rest_server.py &
 
-#### Optionally start vnc server
+#### Home Assistant Ingress: gateway accepts only the Supervisor TCP peer.
+# Ingress gets its own loopback-only VNC instance, independent of legacy VNC.
+INGRESS_PORT="$(bashio::addon.ingress_port)"
+if [[ "$INGRESS_PORT" =~ ^[0-9]+$ ]] && (( INGRESS_PORT >= 62000 && INGRESS_PORT <= 65500 )); then
+    REMOTE_ARGS=(--port "$INGRESS_PORT")
+    if [ "$REMOTE_ACCESS" = true ]; then
+        REMOTE_ARGS+=(--enabled)
+    fi
+    python3 -u /remote_access.py "${REMOTE_ARGS[@]}" &
+else
+    bashio::log.error "No valid Supervisor ingress port; remote access stays closed."
+fi
+
+#### Optionally start legacy LAN vnc server
 if [ -n "$VNC_SERVER" ]; then
     PRIMARY_DEV="$(ip route show | awk '/^default/ {print $5; exit}')"  # Returns name of primary device (typically Ethernet before WiFi)
     HOST_IP="$(ip route show | sed -n "/\b${PRIMARY_DEV}\b/ s/.* src \([^ ]*\).*/\1/p" | head -1)"  # Return first IP address tied to primary device

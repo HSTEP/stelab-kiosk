@@ -19,6 +19,8 @@ assert config['slug'] == 'stelab_kiosk'
 assert config['boot'] == 'manual'
 assert config['arch'] == ['aarch64']
 assert config['audio'] and config['udev']
+assert config['ingress'] and config['ingress_port'] == 0
+assert config['panel_admin'] and not config['options']['remote_access']
 assert config['image'] == 'ghcr.io/hstep/stelab-kiosk-{arch}'
 assert 'config:rw' not in config['map']
 assert not config['options']['ha_password']
@@ -29,6 +31,7 @@ assert set(config['options']) <= set(config['schema'])
 base = build['build_from']['aarch64']
 dockerfile = (addon / 'Dockerfile').read_text()
 assert f'ARG BUILD_FROM={base}' in dockerfile
+assert f'ARG BUILD_VERSION={version}' in dockerfile
 for line in dockerfile.splitlines():
     if line.startswith('COPY ') and '--from=' not in line:
         for source in shlex.split(line)[1:-1]:

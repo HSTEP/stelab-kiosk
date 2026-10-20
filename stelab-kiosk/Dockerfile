@@ -6,7 +6,7 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=0.1.0-rc.2
+ARG BUILD_VERSION=0.1.0-rc.3
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \
     S6_SERVICES_GRACETIME=25000 S6_KILL_GRACETIME=15000
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -18,12 +18,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gsettings-desktop-schemas onboard at-spi2-core gir1.2-atspi-2.0 \
     unclutter-xfixes fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji \
     chromium pulseaudio-utils libasound2-plugins \
-    python3 python3-xlib python3-aiohttp x11vnc \
+    python3 python3-xlib python3-aiohttp x11vnc novnc \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=vtbuild /tmp/tty0_override.so /usr/lib/tty0_override.so
 COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
-COPY browser_profile.py startup_ports.py /
+COPY browser_profile.py startup_ports.py remote_access.py /
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run
 COPY kiosk-ui.sh /usr/local/bin/kiosk-ui
@@ -35,6 +35,8 @@ RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /
     && command -v bashio && command -v xprop && command -v xterm \
     && command -v pcmanfm && command -v mousepad && command -v onboard \
     && python3 -c 'import aiohttp, Xlib' \
+    && test -f /usr/share/novnc/vnc.html \
+    && test -f /usr/share/novnc/core/rfb.js \
     && test -e /usr/lib/aarch64-linux-gnu/dri/v3d_dri.so \
     && chromium --version \
     && dpkg-query -W chromium libgl1-mesa-dri libegl-mesa0 > /etc/stelab-build-packages.txt

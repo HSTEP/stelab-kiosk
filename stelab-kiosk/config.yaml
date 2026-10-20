@@ -1,7 +1,7 @@
 {
   "name": "STELAB Kiosk",
   "description": "Debian desktop kiosk for Raspberry Pi 5: Chromium, Openbox, terminal and file manager.",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0-rc.3",
   "slug": "stelab_kiosk",
   "arch": [
     "aarch64"
@@ -100,7 +100,8 @@
     "debug_mode": false,
     "ha_username": "",
     "ha_password": "",
-    "xorg_vt_mode": "preload"
+    "xorg_vt_mode": "preload",
+    "remote_access": false
   },
   "schema": {
     "ha_username": "str",
@@ -135,7 +136,8 @@
     "touch_debug_level": "int(0,8)",
     "vnc_server": "password",
     "debug_mode": "bool",
-    "xorg_vt_mode": "list(preload|native)"
+    "xorg_vt_mode": "list(preload|native)",
+    "remote_access": "bool"
   },
   "environment": {
     "DISPLAY": ":0"
@@ -145,5 +147,10 @@
   "udev": true,
   "url": "https://github.com/HSTEP/stelab-kiosk",
   "image": "ghcr.io/hstep/stelab-kiosk-{arch}",
-  "timeout": 45
+  "timeout": 45,
+  "ingress": true,
+  "ingress_port": 0,
+  "panel_title": "STELAB Remote",
+  "panel_icon": "mdi:monitor-share",
+  "panel_admin": true
 }

@@ -1,3 +1,20 @@
+# Ověření kandidáta 0.1.0-rc.3 — 2026-10-20
+
+- Lokální kontrola zdrojů prošla.
+- 23 lokálních testů prošlo: původních 16 a sedm nových kontrol brány.
+- Ověřeno odmítnutí cizí TCP adresy na HTTP i WebSocket cestách, i s podvrženými
+  ingress/user/IP hlavičkami; vypnutý stav, statické soubory, odmítnutí symlinku
+  mimo složku assets a obousměrný přenos binárních dat přes testovací TCP server.
+- Produkční povolená adresa nemá přepínač ani proměnnou pro obejití ochrany.
+- Nové CI kroky připravují jednorázový kontejner bez HA zařízení, přidají pouze
+  do něj Xvfb a ověří skutečný x11vnc RFB handshake, loopback bind i pohyb myši.
+  Tyto kroky zatím NEBYLY spuštěné. Xvfb není součástí vydávaného obrazu.
+- Neprovedeno: ARM64 sestavení této verze, reálný HA Ingress/Cloudflare průchod,
+  noVNC v prohlížeči, start/stop na Pi a reálná vzdálená relace.
+- Na běžícím HA ani v Cloudflare nebylo při této přípravě nic změněno.
+- Dodaný GPU report na zařízení potvrdil ANGLE/Broadcom V3D 7.1.10.2 a Mesa
+  25.0.7, GPU crash count 0. GPU parametry se v rc.3 nemění.
+
 # Ověření opravy 0.1.0-rc.2 — 2026-10-20
 
 - 16 testů prošlo lokálně i na GitHubu: uchování profilu, idempotentní inicializace,

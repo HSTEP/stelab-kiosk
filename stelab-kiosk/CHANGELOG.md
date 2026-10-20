@@ -1,3 +1,14 @@
+# 0.1.0-rc.3 (candidate, not published)
+
+- Add optional same-screen noVNC through Home Assistant Ingress / STELAB Remote.
+- Keep remote control disabled by default; admin sidebar panel, Supervisor-only
+  HTTP/WebSocket gateway, loopback-only private x11vnc with IPv6 disabled.
+- Preserve the HA ingress path with relative assets and WebSocket URLs; force
+  local scaling so reconnecting does not resize the physical HDMI display.
+- Add gateway rejection/bridge tests and a disposable Xvfb + real RFB handshake
+  and pointer input test before publishing. No new Cloudflare subscription.
+- Keep Chromium profile persistence, GPU flags and the original backup intact.
+
 # 0.1.0-rc.2
 
 - Preserve existing Chromium Preferences, Local State, cookies, site storage,

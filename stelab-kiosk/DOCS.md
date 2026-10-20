@@ -5,14 +5,10 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.2, veřejná oprava restartu a zachování profilu.**
-[16 testů a test skutečného Chromia](https://github.com/HSTEP/stelab-kiosk/actions/runs/39418146659)
-prošly na nativním ARM64 serveru. Test ověřil zachování cookies, localStorage,
-Preferences a Local State přes dvě spuštění prohlížeče.
-[Publikace opravy](https://github.com/HSTEP/stelab-kiosk/actions/runs/39418628719)
-prošla a [GHCR obraz](https://github.com/HSTEP/stelab-kiosk/pkgs/container/stelab-kiosk-aarch64)
-je dostupný anonymně. Konkrétní Google/YouTube přihlášení je nutné po aktualizaci
-ověřit na zařízení. Na běžícím HA nebyla během přípravy aktualizace provedena změna.
+**Stav: 0.1.0-rc.3 — připravená aktualizace se vzdálenou plochou, dosud nevydaná.**
+Poslední vydaná verze je 0.1.0-rc.2. Její test Chromia zachoval cookies,
+localStorage, Preferences a Local State přes dvě spuštění. Nová verze vyžaduje
+sestavení a test vzdálené plochy na ARM64 před publikací.
 
 ## Oprava restartu v 0.1.0-rc.2
 
@@ -57,6 +53,45 @@ obnov katalog doplňků. Původní `local_welizard_browser` neodinstalovávej.
 - Před startem kontroluje dostupnost REST a Chromium DevTools portů. To pomáhá
   odhalit spuštěný původní kiosk, ale není to univerzální zámek displeje.
 
+## STELAB Remote přes přihlášení Home Assistantu
+
+Verze 0.1.0-rc.3 přidává noVNC přes vestavěný **Ingress**. Ovládá stejnou
+obrazovku `:0`, která je připojená přes HDMI. Používá existující přihlášení do
+Home Assistantu a existující adresu HA, takže není potřeba další doména, VPN,
+Cloudflare Access ani aktivace jeho tarifu.
+
+Po vydání, aktualizaci a ověření zálohy:
+
+1. V konfiguraci STELAB Kiosku zapni **Remote desktop through Home Assistant**
+   (`remote_access: true`), ulož a restartuj pouze STELAB Kiosk.
+2. Starou volbu `vnc_server` ponech prázdnou. Webová plocha ji nepotřebuje;
+   neprázdná hodnota by navíc zapnula původní VNC na LAN portu 5900.
+3. Na stránce doplňku vyber **Open Web UI**. Pro pohodlné otevírání zapni
+   **Show in sidebar**; položka se jmenuje **STELAB Remote**.
+4. Přes stejný odkaz a přihlášení HA se připoj i mimo domov. Ověř to například
+   přes mobilní data. Konkrétní URL spravuje HA; `/remote` se samo nevytváří.
+5. Klikání a psaní mění skutečnou místní plochu. Boční panel noVNC nabízí
+   klávesnici, další modifikační klávesy, schránku a režim pouze pro prohlížení.
+   Pro zkratky Super/Command lze použít tlačítko Windows v panelu noVNC, když
+   je prohlížeč na Macu zachytává. Odpojení relace neukončuje aplikace na ploše.
+6. Pro vypnutí změň `remote_access: false`, ulož a restartuj doplněk.
+
+Přístup je ve výchozím nastavení vypnutý; nová položka je nastavena jako panel
+pro správce HA. Připojený uživatel ovládá také terminál a přihlášené weby kiosku.
+Nesdílej svou přihlášenou relaci ani tokenovanou ingress URL.
+
+Webový server přijímá pouze TCP spojení ze Supervisoru `172.30.32.2`.
+Nedůvěřuje hlavičkám `X-Forwarded-For` ani `X-Remote-User-Id` jako náhradě
+za ověření zdrojové adresy. U host network používá port přidělený Supervisorem.
+VNC backend poslouchá pouze na IPv4 loopbacku, IPv6 je vypnuté a je oddělený
+od volitelného starého LAN VNC. Samotná lokální VNC větev nepoužívá heslo;
+hranici vzdáleného přístupu tvoří HA Ingress. Procesy se stejnými lokálními
+oprávněními na hostiteli nejsou touto konfigurací izolované.
+
+Nepřidávej Cloudflare trasu přímo na interní webový ani VNC port. HTTPS zajišťuje
+existující spojení do HA. noVNC neposílá zvuk z HDMI a není náhradou streamování
+YouTube. Připojení přes skutečný HA Ingress/Cloudflare a zařízení vyžaduje test.
+
 ## Ovládání desktopu
 
 | Klávesy | Akce |
@@ -85,7 +120,7 @@ verzi. Ruční instalace v běžícím kontejneru se při aktualizaci ztratí.
 Desktop a Chromium běží se stejnými právy jako převzatý kiosk: root v kontejneru,
 Chromium s `--no-sandbox`. Terminál je pro důvěryhodného místního uživatele a má
 přístup k datům i oprávněním doplňku. Nejde o samostatný Debian systém na hostiteli.
-Žádný webový terminál ani nový vzdálený přístup není zapnutý.
+Vzdálený přístup zůstává vypnutý, dokud jej uživatel nezapne volbou `remote_access`.
 
 ## První sestavení bez publikování
 
@@ -98,14 +133,15 @@ Alternativně lze sestavit lokálně s Docker Buildx:
 
 ```bash
 docker buildx build --platform linux/arm64 \
-  --build-arg BUILD_VERSION=0.1.0-rc.2 \
-  --tag stelab-kiosk:0.1.0-rc.2 --load ./stelab-kiosk
+  --build-arg BUILD_VERSION=0.1.0-rc.3 \
+  --tag stelab-kiosk:0.1.0-rc.3 --load ./stelab-kiosk
 ```
 
 Lokální kontroly nevyžadují Docker:
 
 ```bash
 python3 scripts/validate.py
+python3 -m pip install aiohttp
 python3 -m unittest discover -s tests -v
 ```
 

@@ -140,6 +140,9 @@ configuration:
       Debug verbosity for mouse/touch gesture parsing. Use 1 for normal logs,
       2-3 to inspect real tap/swipe/pinch handling, and higher values only for
       deep parser debugging. [Default: 1]
+  remote_access:
+    name: "Remote desktop through Home Assistant"
+    description: "Enable same-screen noVNC in Open Web UI / STELAB Remote. Requires HA Ingress; no Cloudflare Access subscription. Off by default. Restart after changing."
   vnc_server:
     name: "VNC Server Password"
     description: |
