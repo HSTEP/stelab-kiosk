@@ -29,15 +29,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 async def poll_evaluate(controller, expression, expected, timeout=45):
     end = asyncio.get_running_loop().time() + timeout
+    last = 'No result yet'
     while asyncio.get_running_loop().time() < end:
         try:
             result = await controller.evaluate(expression)
+            last = repr(result)
             if result.get('result', {}).get('value') == expected:
                 return
-        except Exception:
-            pass
+        except Exception as error:
+            last = f'{type(error).__name__}: {error}'
         await asyncio.sleep(0.3)
-    raise AssertionError('Browser did not reach expected persistence state')
+    raise AssertionError(f'Expected {expected!r}; last DevTools result: {last}')
 
 async def test_browser(profile, port, origin):
     controller = ChromiumController(port=port)
@@ -53,12 +55,18 @@ async def test_browser(profile, port, origin):
             before = (settings.read_bytes(), local_state.read_bytes())
             assert not initialize_profile(profile)
             assert (settings.read_bytes(), local_state.read_bytes()) == before
-        process = subprocess.Popen(argv + [origin + page], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f'Checking browser launch: {page}', flush=True)
+        log = tempfile.TemporaryFile(mode='w+t')
+        process = subprocess.Popen(argv + [origin + page], stdout=log, stderr=log)
         try:
             await poll_evaluate(controller, 'document.body.innerText.trim()', expected)
             await poll_evaluate(controller, "localStorage.getItem('STELABStorage')", 'present')
             assert await close_browser(profile, port), 'Browser did not close gracefully'
             process.wait(timeout=10)
+        except Exception:
+            log.seek(0)
+            print(log.read()[-5000:], flush=True)
+            raise
         finally:
             if process.poll() is None:
                 process.terminate()
@@ -66,6 +74,7 @@ async def test_browser(profile, port, origin):
                 except subprocess.TimeoutExpired:
                     process.kill()
                     process.wait()
+            log.close()
     print('Real Chromium persistence test passed: cookie, localStorage, Preferences and Local State survived restart.')
 
 with tempfile.TemporaryDirectory(prefix='stelab-smoke-') as folder:
