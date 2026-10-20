@@ -7,6 +7,9 @@
   local scaling so reconnecting does not resize the physical HDMI display.
 - Add gateway rejection/bridge tests and a disposable Xvfb + real RFB handshake
   and pointer input test before publishing. No new Cloudflare subscription.
+- Add pinned official ChatGPT ARM64 app, a non-root desktop launcher, persistent
+  AI home/projects, clean credential-free process environment and Command+G.
+- Verify the actual ChatGPT window under Xvfb before publishing.
 - Keep Chromium profile persistence, GPU flags and the original backup intact.
 
 # 0.1.0-rc.2

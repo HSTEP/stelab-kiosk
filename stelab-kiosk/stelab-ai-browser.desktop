@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=STELAB AI browser
+Exec=/usr/local/bin/stelab-ai-browser %U
+Type=Application
+NoDisplay=true
+MimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;

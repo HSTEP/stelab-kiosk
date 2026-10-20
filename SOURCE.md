@@ -20,3 +20,13 @@ VT mode is available for diagnosis. Neither is verified here on hardware.
 0.1.0-rc.2: preserve profile startup data; S6 service plus owned-browser graceful
 shutdown; restart-aware port preflight; Onboard AT-SPI typelib; native ARM64
 builds and real Chromium persistence test. Original GPU flags retained.
+
+## ChatGPT desktop package in rc.3
+
+Official OpenAI ARM64 Debian package, version 26.1013.40934. Downloaded directly
+from the vendor during image build, pinned SHA-256
+`9ab2cbbaf33cebeaa1e06eb5cab78128936f927a0d97bf00e40694e5f31c629b`.
+Vendor package contents and included copyright/license notices are preserved;
+the application is a separate component, not relicensed as kiosk source.
+Source URL: https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_26.1013.40934_arm64.deb
+Setup documentation: https://learn.chatgpt.com/docs/linux/linux-app

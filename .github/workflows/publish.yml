@@ -75,17 +75,18 @@ jobs:
             -v "${GITHUB_WORKSPACE}/tests:/tests:ro" \
             "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}" \
             /tests/smoke_browser_profile.py
-      - name: Verify same-screen remote access in disposable container
+      - name: Verify remote desktop and ChatGPT in disposable container
         timeout-minutes: 5
         env:
           VERSION: ${{ steps.meta.outputs.version }}
         run: |
-          docker run --rm --platform linux/arm64 --entrypoint /bin/bash \
+          docker run --rm --platform linux/arm64 --cap-add SYS_ADMIN --entrypoint /bin/bash \
             -v "${GITHUB_WORKSPACE}/tests:/tests:ro" \
             "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}" -ec '
               apt-get update -qq
               apt-get install -y --no-install-recommends xvfb
               python3 /tests/smoke_remote_access.py
+              python3 /tests/smoke_chatgpt.py
             '
       - name: Publish the tested image
         env:

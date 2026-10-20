@@ -192,6 +192,12 @@ if ! python3 /startup_ports.py "$REST_PORT" "$CHROMIUM_DEVTOOLS_PORT"; then
 fi
 mkdir -p /config/scripts /config/files /media/screenshots
 chmod 700 /config/scripts /config/files
+/usr/local/bin/stelab-chatgpt --prepare
+# The AI desktop user must not inherit read access to root kiosk credentials.
+chmod 700 /data
+if [ -d "$CHROMIUM_PROFILE_DIR" ]; then
+    chmod 700 "$CHROMIUM_PROFILE_DIR"
+fi
 
 resolve_browser_binary() {
     case "$BROWSER_ENGINE" in
@@ -249,6 +255,7 @@ browser_process_running() {
 seed_chromium_preferences() {
     [ "$BROWSER_ENGINE" = "chromium" ] || return 0
     python3 /browser_profile.py init --profile "$CHROMIUM_PROFILE_DIR"
+    chmod 700 "$CHROMIUM_PROFILE_DIR"
 }
 
 resolve_browser_binary
@@ -427,7 +434,7 @@ cp /etc/xdg/openbox/stelab-menu.xml ~/.config/openbox/menu.xml
 # Only load the supplied menu; Debian's optional generated menu is not installed.
 sed -i '\|<file>/var/lib/openbox/debian-menu.xml</file>|d' "$RC_XML"
 # Delete selected old key bindings
-awk 'BEGIN{skip=0} /<keybind key="(C-A-Left|C-A-Right|W-d|W-e|W-Return|W-Up|W-Down|C-A-o|C-A-k)">/{skip=1} /<\/keybind>/ && skip{skip=0; next} !skip{print}' "$RC_XML" > /tmp/rc.new.xml
+awk 'BEGIN{skip=0} /<keybind key="(C-A-Left|C-A-Right|W-d|W-e|W-g|W-Return|W-Up|W-Down|C-A-o|C-A-k)">/{skip=1} /<\/keybind>/ && skip{skip=0; next} !skip{print}' "$RC_XML" > /tmp/rc.new.xml
 mv /tmp/rc.new.xml "$RC_XML"
 
 # Add new key bindings
@@ -462,6 +469,7 @@ cat <<'EOF' > /tmp/new_keybinds.xml
   <keybind key="W-Return"><action name="Execute"><command>/usr/local/bin/stelab-desktop terminal</command></action></keybind>
   <keybind key="W-e"><action name="Execute"><command>/usr/local/bin/stelab-desktop files</command></action></keybind>
   <keybind key="W-d"><action name="Execute"><command>/usr/local/bin/stelab-desktop dashboard</command></action></keybind>
+  <keybind key="W-g"><action name="Execute"><command>/usr/local/bin/stelab-chatgpt</command></action></keybind>
 
   <!-- Next window: Ctrl+Alt+Shift+Right -->
   <keybind key="C-A-S-Right">

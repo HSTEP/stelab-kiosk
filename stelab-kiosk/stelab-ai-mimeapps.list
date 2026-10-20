@@ -1,0 +1,5 @@
+[Default Applications]
+x-scheme-handler/http=stelab-ai-browser.desktop
+x-scheme-handler/https=stelab-ai-browser.desktop
+text/html=stelab-ai-browser.desktop
+x-scheme-handler/codex=chatgpt.desktop

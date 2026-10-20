@@ -92,6 +92,36 @@ Nepřidávej Cloudflare trasu přímo na interní webový ani VNC port. HTTPS za
 existující spojení do HA. noVNC neposílá zvuk z HDMI a není náhradou streamování
 YouTube. Připojení přes skutečný HA Ingress/Cloudflare a zařízení vyžaduje test.
 
+## ChatGPT a Codex na desktopu
+
+Součástí rc.3 je oficiální linuxová aplikace ChatGPT pro ARM64, verze
+`26.1013.40934`. Balíček se bere přímo od OpenAI a ověřuje se jeho SHA-256.
+Otevři ji **⌘G** nebo přes pravé tlačítko na ploše → **ChatGPT / Codex**.
+Nespouští se automaticky při startu. Přihlas se vlastním účtem ChatGPT;
+žádné heslo ani API klíč se nevkládá do konfigurace doplňku.
+
+Aplikace běží jako uživatel `stelab-ai` (nikoli root), bez proměnných obsahujících
+HA heslo nebo token Supervisoru. Domov a nastavení jsou trvale v
+`/config/chatgpt/home`, projekty ukládej do `/config/chatgpt/home/projects`.
+Přihlašovací prohlížeč má oddělený profil; nepoužívá root profil dashboardu.
+Přihlášení a obnovení relace po restartu vyžadují zkoušku na zařízení.
+
+K dispozici je Git, Python/venv, Node.js (závislost noVNC) a bubblewrap.
+Výchozí omezení a schvalování Codexu nevypínej. Funkčnost jeho sandboxu závisí
+i na jádře a nastavení HAOS; pokud hlásí chybu, neposouvej úlohu do režimu bez
+omezení. Linuxová aplikace je preview a podle dokumentace OpenAI zatím nemá
+Computer Use. Práce s projekty a příkazy je jiná funkce než ovládání celé plochy.
+
+Samostatný uživatel není samostatný virtuální počítač: sdílí X11 plochu,
+síť a část souborového systému kiosku. Pro nedůvěryhodné projekty a nehlídané
+agenty s širokými právy používej samostatné prostředí. Desktopová aplikace zabírá
+přibližně 1,6 GB rozbalená; potřebuje také RAM navíc vedle Chromia a HA.
+Aktualizace aplikace se vydává s novým sestavením doplňku. Ruční apt upgrade
+uvnitř běžícího kontejneru se při výměně obrazu nezachová.
+
+Oficiální podklady: [Linux / ARM64](https://learn.chatgpt.com/docs/linux/linux-app),
+[omezení příkazů](https://learn.chatgpt.com/docs/sandboxing).
+
 ## Ovládání desktopu
 
 | Klávesy | Akce |
@@ -100,6 +130,7 @@ YouTube. Připojení přes skutečný HA Ingress/Cloudflare a zařízení vyžad
 | ⌘↑ | Skrýt lištu návratem do fullscreenu |
 | ⌘Enter | Otevřít terminál |
 | ⌘E | Otevřít správce souborů |
+| ⌘G | Otevřít ChatGPT / Codex |
 | ⌘D | Přepnout na okno prohlížeče; po zavření ho znovu otevřít |
 | Ctrl+Alt+Shift+← / → | Přepnout mezi okny |
 | Ctrl+Alt+O | Přepnout obrazovkovou klávesnici |

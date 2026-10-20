@@ -2,6 +2,7 @@
 <openbox_menu xmlns="http://openbox.org/3.4/menu">
   <menu id="root-menu" label="STELAB">
     <item label="Dashboard"><action name="Execute"><command>/usr/local/bin/stelab-desktop dashboard</command></action></item>
+    <item label="ChatGPT / Codex"><action name="Execute"><command>/usr/local/bin/stelab-chatgpt</command></action></item>
     <item label="Terminal"><action name="Execute"><command>/usr/local/bin/stelab-desktop terminal</command></action></item>
     <item label="Files"><action name="Execute"><command>/usr/local/bin/stelab-desktop files</command></action></item>
     <item label="Shared files"><action name="Execute"><command>/usr/local/bin/stelab-desktop shared</command></action></item>
