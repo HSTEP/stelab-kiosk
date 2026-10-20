@@ -1,6 +1,6 @@
 # STELAB Kiosk — 0.1.0-rc.4
 
-**Lokální kandidát; dosud nezveřejněn ani otestován na Pi.**
+**ARM64 sestavení a integrační test skutečné plochy prošly. Zobrazení na Pi je ještě potřeba ověřit.**
 
 Zelenomodrá plocha STELAB a ikony se zobrazí přes ⌘M. Jedno kliknutí otevírá
 Dashboard, Web, ChatGPT, Soubory, Terminál, Sdílené soubory a Textový editor.

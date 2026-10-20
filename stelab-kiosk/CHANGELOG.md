@@ -1,4 +1,4 @@
-# 0.1.0-rc.4 (unreleased candidate)
+# 0.1.0-rc.4
 
 - Add a static green/cyan STELAB wallpaper and a PCManFM desktop with launchers
   for Dashboard, Web, ChatGPT, Files, Terminal, Shared files and Text editor.
@@ -8,7 +8,9 @@
   only when missing; keep user changes over restarts and image updates.
 - Use the existing PCManFM, a private D-Bus session and a credential-scrubbed
   environment. Keep AI app permissions and Chromium GPU/profile settings intact.
-- Candidate only: full ARM64 build and hardware acceptance remain pending.
+- Native ARM64 build and real Xvfb desktop test passed, including wallpaper,
+  desktop show/restore and preservation of user files. Pi hardware acceptance
+  remains required after updating.
 
 # 0.1.0-rc.3
 

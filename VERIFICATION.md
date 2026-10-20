@@ -1,14 +1,28 @@
-# Kandidát 0.1.0-rc.4 — dosud nezveřejněn
+# Ověření vydání 0.1.0-rc.4 — 2026-10-20
 
-Nové soubory plochy prošly lokální validací syntaxe a všech 23 stávajících testů.
-Samostatně ověřeno opakované vytvoření plochy: uživatelské pozadí, změněná
-ikona i konfigurace zůstaly zachované; vytvořilo se všech sedm zástupců.
-ARM64 sestavení, skutečné
-zobrazení ikon a PCManFM nad Xorg zatím nejsou pro tento kandidát ověřené.
-Před vydáním je nutné spustit build a integrační test plochy; nikdy nespouštět
-testovací Xorg proti fyzickému displeji vedle běžícího kiosku.
+Runtime commit: `3fe1353`. Native ARM64 publish workflow:
+https://github.com/HSTEP/stelab-kiosk/actions/runs/39457252498
 
-Níže je historický záznam už zveřejněné rc.3, nikoliv ověření rc.4:
+- Source syntax and all 23 unit tests passed.
+- Native ARM64 image built on ubuntu-24.04-arm.
+- Real Chromium cookie/localStorage persistence test passed.
+- Real noVNC/RFB handshake, pointer input and loopback-listener test passed.
+- Official ChatGPT window, UID1000, clean environment and persistent home test passed.
+- Real PCManFM desktop displayed a nonblank wallpaper under Xvfb/Openbox.
+- Seven launchers created; show/restore desktop with wmctrl succeeded.
+- Repeated initialization preserved modified launcher, wallpaper and opaque
+  Chromium/ChatGPT auth-file sentinels byte-for-byte in the test container.
+- Actual Google/ChatGPT account sessions were not used in CI. A server may
+  expire a login independently of preserving the local profile.
+- No original kiosk or second hardware Xorg was started. Actual Pi display and
+  mouse/touch activation of desktop icons require acceptance after updating.
+
+The first test run (eef22ba) built successfully and passed the existing tests,
+but its desktop probe incorrectly searched only root children after Openbox
+reparented windows. The passing revision uses _NET_CLIENT_LIST. Nothing from
+that failed run was published.
+
+Historical rc.3 verification follows:
 
 # Ověření vydání 0.1.0-rc.3 — 2026-10-20
 

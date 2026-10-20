@@ -5,8 +5,8 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Lokální kandidát rc.4 — plocha a ikony, dosud nezveřejněn. Poslední publikovaná verze: rc.3.**
-[ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39445548335)
+**Stav: 0.1.0-rc.4 — plocha STELAB s tapetou a ikonami; zachování profilů.**
+[ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39457252498)
 a [vydávací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39446283466)
 prošla. Před publikací bylo ověřeno zachování profilu Chromia, skutečné VNC
 spojení a pohyb myši i otevření oficiálního ChatGPT okna pod běžným uživatelem
@@ -58,7 +58,7 @@ obnov katalog doplňků. Původní `local_welizard_browser` neodinstalovávej.
 - Před startem kontroluje dostupnost REST a Chromium DevTools portů. To pomáhá
   odhalit spuštěný původní kiosk, ale není to univerzální zámek displeje.
 
-## Plocha, ikony a trvalé změny (kandidát rc.4)
+## Plocha, ikony a trvalé změny (rc.4)
 
 `⌘M` zobrazí/skryje plochu bez zavírání oken. Ikony otevírá jedno kliknutí.
 Ikona **Web** aktivuje existující Chromium a zobrazí lištu, aby bylo možné napsat
