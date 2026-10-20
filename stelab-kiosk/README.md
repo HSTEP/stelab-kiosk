@@ -1,6 +1,6 @@
 # STELAB Kiosk — 0.1.0-rc.5
 
-**Kandidát rc.5: Chromium se sandboxem a vlastním uživatelem. Test migrace profilu prošel v dočasném kontejneru na HAOS; úplné sestavení nové verze zatím neproběhlo.**
+**Rc.5: Chromium se sandboxem a vlastním uživatelem. Kompletní ARM64 sestavení a test migrace profilu prošly; zobrazení na fyzickém displeji je potřeba ověřit po aktualizaci.**
 
 Zelenomodrá plocha STELAB a ikony se zobrazí přes ⌘M. Jedno kliknutí otevírá
 Dashboard, Web, ChatGPT, Soubory, Terminál, Sdílené soubory a Textový editor.

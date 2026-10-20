@@ -1,0 +1,9 @@
+{
+  "image": "ghcr.io/hstep/stelab-kiosk-aarch64:0.1.0-rc.4",
+  "digest": "sha256:7e0217928ed3ea712e9661da753d4fd6fdd2f65b134dcf0e70ebf92b504491f1",
+  "platform": "linux/arm64",
+  "public_manifest_verified": true,
+  "layer_access_verified": 21,
+  "compressed_layer_bytes": 1245579405,
+  "method": "Anonymous registry token; manifest/config GET and one-byte read from each layer. No saved credentials, Docker runtime or full image execution."
+}

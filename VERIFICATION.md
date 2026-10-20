@@ -1,34 +1,34 @@
-# Kandidát 0.1.0-rc.5 — Chromium sandbox
+# Ověření vydání 0.1.0-rc.5 — 2026-10-20
 
-Dosud nezveřejněn. Kompletní obraz nové verze ještě nebyl sestaven.
-Běžící uživatelský doplněk ani jeho profily nebyly změněny.
+Runtime commit: `b0edd6d`. Native ARM64 build, tests and publication:
+https://github.com/HSTEP/stelab-kiosk/actions/runs/39463303726
 
-Ověřeno přímo na uživatelově HAOS / Raspberry Pi v dočasném kontejneru
-odvozeném z rc.4, bez host zařízení, host sítě nebo uživatelských dat:
+- All 25 tests and source validation passed.
+- Native ARM64 image built successfully on ubuntu-24.04-arm.
+- Real Chromium cookie/localStorage persistence across restart passed.
+- Real root-to-UID1001 profile migration and a further restart preserved cookies
+  and localStorage. All three browser sessions closed gracefully before Xvfb.
+- Chromium's chrome://sandbox confirmed active isolation (adequately sandboxed),
+  the process ran as UID1001 and did not have --no-sandbox.
+- A root-created file after a simulated legacy rollback retained its contents
+  and was repaired to UID1001 before the next launch.
+- Real noVNC/RFB/pointer input, ChatGPT UID1000/persistent home, and PCManFM
+  wallpaper/desktop tests all passed in the final image before publication.
+- The same migration/sandbox test passed directly on the user's HAOS/Pi in a
+  disposable rc.4 container plus the candidate source and two Debian packages.
+  No existing package was upgraded and no physical devices or user data mapped.
+- Production container uses docker-default AppArmor, SYS_ADMIN and unconfined
+  seccomp; isolated HAOS testing used docker-default/SYS_ADMIN with default
+  seccomp. No running production profile was changed for those tests.
+- Main-process detection handles Chromium rewriting argv[0] into a full process
+  title under D-Bus; child renderer processes remain excluded.
+- Actual V3D rendering, audio and touchscreen acceptance require updating the
+  real kiosk. GPU flags and profile path are retained. Real Google sessions were
+  not used in CI; server expiration is independent of profile preservation.
 
-- Instalovány pouze chromium-sandbox a Xvfb; žádný stávající balíček se neupgradoval.
-- Stejný rootem vytvořený testovací profil převeden na UID1001.
-- Skutečné cookies a localStorage zachované při převodu i následném restartu.
-- Stránka chrome://sandbox potvrdila aktivní sandbox a adekvátní izolaci.
-- Skutečný proces Chromia běžel jako UID1001 bez --no-sandbox.
-- Chromium se ve všech třech fázích korektně ukončilo před Xvfb.
-- Opraveno rozpoznání procesu: Chromium pod D-Bus přepisuje argv[0] na celý
-  procesový titulek, což předchozí detekce hlavního procesu nerozpoznala.
-- Ověřena oprava vlastnictví souboru po simulovaném návratu na starší root verzi.
-- Lokálně prošlo všech 25 testů a validace syntaxe/metadata.
+Public image digest and anonymous layer checks: REGISTRY-VERIFICATION.json.
 
-Zachována cesta /config/chromium-profile a dosavadní parametry GPU.
-ChatGPT ponechává samostatný UID1000 a svůj nezměněný domov.
-Nový domov prohlížeče: /config/chromium-home, UID1001.
-Přidávají se skupiny pouze podle skutečných DRM zařízení; PulseAudio připojení
-se předává čistému prostředí bez HA hesel a Supervisor tokenů.
-
-Před vydáním zbývá úplné ARM64 sestavení se všemi integračními testy.
-Po vydání je nutné na fyzickém displeji zkontrolovat V3D, zvuk a ovládání.
-Testovací cookie není ověřením přihlášení ke skutečnému účtu Google; server může
-relaci odvolat nezávisle na zachování profilu.
-
-Historická ověření:
+Historical verification follows:
 
 # Ověření vydání 0.1.0-rc.4 — 2026-10-20
 

@@ -5,8 +5,8 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Lokální kandidát rc.5 — Chromium pod samostatným uživatelem se sandboxem. Poslední zveřejněná verze: rc.4.**
-[ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39457252498)
+**Stav: 0.1.0-rc.5 — Chromium pod samostatným uživatelem se zapnutým sandboxem.**
+[ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39463303726)
 a [vydávací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39446283466)
 prošla. Před publikací bylo ověřeno zachování profilu Chromia, skutečné VNC
 spojení a pohyb myši i otevření oficiálního ChatGPT okna pod běžným uživatelem
@@ -58,7 +58,7 @@ obnov katalog doplňků. Původní `local_welizard_browser` neodinstalovávej.
 - Před startem kontroluje dostupnost REST a Chromium DevTools portů. To pomáhá
   odhalit spuštěný původní kiosk, ale není to univerzální zámek displeje.
 
-## Chromium sandbox (kandidát rc.5)
+## Chromium sandbox (rc.5)
 
 Kiosk prohlížeč má vlastní UID1001 a zapnutý sandbox; původní parametr
 `--no-sandbox` se nepoužívá. Při prvním startu se zachová obsah stávajícího
@@ -66,8 +66,9 @@ Kiosk prohlížeč má vlastní UID1001 a zapnutý sandbox; původní parametr
 ani nemaže. Nový domov `/config/chromium-home` je trvalý, cache je v `/run`.
 Přepínač pro vypnutí sandboxu není dostupný jako nastavení ani automatická záloha.
 
-Samotný aktivní sandbox byl ověřen na HAOS v izolovaném kontejneru; úplné
-sestavení kandidáta a ověření fyzického displeje jsou zatím před vydáním.
+Aktivní sandbox a převod testovacího profilu byly ověřeny na HAOS v izolovaném
+kontejneru i v kompletním ARM64 sestavení. Fyzický displej, V3D a zvuk je
+potřeba zkontrolovat po aktualizaci na zařízení.
 Chromium stále nenabízí plnohodnotnou Google Chrome Sync; zachovávání webových
 přihlášení je oddělené od přihlášení profilu prohlížeče pro synchronizaci.
 
@@ -93,7 +94,7 @@ sestavení obrazu, jinak mohou při aktualizaci zmizet. Pouhé uložení skriptu
 `/config` nezajistí jeho automatické spuštění; spuštění musí obsahovat doplněk.
 
 ChatGPT/Codex může upravovat projekt ve svém trvalém domově. Nemá `sudo`,
-root oprávnění ani přístup k root profilu Chromia nebo HA heslům. Může připravit
+root oprávnění ani přístup k profilu kioskového Chromia nebo HA heslům. Může připravit
 změnu klonu tohoto repozitáře; instalace systémové změny dál vyžaduje novou
 ověřenou verzi doplňku. Linux preview zatím nepodporuje Computer Use, tedy
 obecné ovládání oken klikáním. Lokální spouštění agentů v HAOS kontejneru musí
@@ -154,7 +155,7 @@ Nespouští se automaticky při startu. Přihlas se vlastním účtem ChatGPT;
 Aplikace běží jako uživatel `stelab-ai` (nikoli root), bez proměnných obsahujících
 HA heslo nebo token Supervisoru. Domov a nastavení jsou trvale v
 `/config/chatgpt/home`, projekty ukládej do `/config/chatgpt/home/projects`.
-Přihlašovací prohlížeč má oddělený profil; nepoužívá root profil dashboardu.
+Přihlašovací prohlížeč má oddělený profil; nepoužívá profil dashboardu.
 Přihlášení a obnovení relace po restartu vyžadují zkoušku na zařízení.
 
 K dispozici je Git, Python/venv, Node.js (závislost noVNC) a bubblewrap.
@@ -199,8 +200,9 @@ Bash a Python 3 jsou součástí obrazu. Skripty se samy při startu nespouště
 Další systémové balíčky a závislosti Pythonu přidej do Dockerfile a vydej novou
 verzi. Ruční instalace v běžícím kontejneru se při aktualizaci ztratí.
 
-Desktop a Chromium běží se stejnými právy jako převzatý kiosk: root v kontejneru,
-Chromium s `--no-sandbox`. Terminál je pro důvěryhodného místního uživatele a má
+Xorg a správa plochy běží jako root v kontejneru. Chromium běží jako UID1001
+se sandboxem; ChatGPT má samostatný UID1000. Sdílený X11 desktop není úplnou
+izolací aplikací. Terminál je pro důvěryhodného místního uživatele a má
 přístup k datům i oprávněním doplňku. Nejde o samostatný Debian systém na hostiteli.
 Vzdálený přístup zůstává vypnutý, dokud jej uživatel nezapne volbou `remote_access`.
 
