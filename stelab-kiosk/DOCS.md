@@ -5,7 +5,7 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.3 — zveřejněná aktualizace se STELAB Remote a aplikací ChatGPT.**
+**Lokální kandidát rc.4 — plocha a ikony, dosud nezveřejněn. Poslední publikovaná verze: rc.3.**
 [ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39445548335)
 a [vydávací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39446283466)
 prošla. Před publikací bylo ověřeno zachování profilu Chromia, skutečné VNC
@@ -57,6 +57,39 @@ obnov katalog doplňků. Původní `local_welizard_browser` neodinstalovávej.
   Xorg. Neprovádí se původní remount `/dev` ani mazání `/dev/tty0`.
 - Před startem kontroluje dostupnost REST a Chromium DevTools portů. To pomáhá
   odhalit spuštěný původní kiosk, ale není to univerzální zámek displeje.
+
+## Plocha, ikony a trvalé změny (kandidát rc.4)
+
+`⌘M` zobrazí/skryje plochu bez zavírání oken. Ikony otevírá jedno kliknutí.
+Ikona **Web** aktivuje existující Chromium a zobrazí lištu, aby bylo možné napsat
+adresu. **Dashboard** aktivuje prohlížeč; zachovává současnou otevřenou stránku.
+Pravé tlačítko na ploše dál otevírá menu Openboxu.
+
+Výchozí pozadí je statické PNG. PCManFM, který už doplněk obsahuje, spravuje
+pozadí i ikony; nejde o další prohlížeč ani animované pozadí.
+
+- `/config/desktop/wallpaper.png`: vlastní pozadí.
+- `/config/desktop/home/Desktop`: zástupci `.desktop`.
+- `/config/desktop/home/.config/pcmanfm/stelab`: nastavení a pozice ikon.
+- `/config/chatgpt/home/projects`: projekty samostatného AI uživatele.
+
+Výchozí soubory se zakládají pouze, pokud chybí. Stejný adresář `/config` musí
+být zachován a zahrnut do zálohy doplňku. Odinstalace či ztráta dat nejsou aktualizace.
+Programy přidané ručně přes `apt`, změny v `/usr`, `/etc` nebo `/root` patří do
+sestavení obrazu, jinak mohou při aktualizaci zmizet. Pouhé uložení skriptu do
+`/config` nezajistí jeho automatické spuštění; spuštění musí obsahovat doplněk.
+
+ChatGPT/Codex může upravovat projekt ve svém trvalém domově. Nemá `sudo`,
+root oprávnění ani přístup k root profilu Chromia nebo HA heslům. Může připravit
+změnu klonu tohoto repozitáře; instalace systémové změny dál vyžaduje novou
+ověřenou verzi doplňku. Linux preview zatím nepodporuje Computer Use, tedy
+obecné ovládání oken klikáním. Lokální spouštění agentů v HAOS kontejneru musí
+být ověřeno na zařízení, samotný start aplikace to nedokazuje.
+
+Doplněk sdílí CPU a RAM hostitele s HA a ostatními službami. V jeho konfiguraci
+není vlastní limit paměti/CPU; přidělování řeší plánovač Linuxu a případné limity
+Dockeru. Výpočet modelu probíhá ve službě OpenAI, ale prohlížeč, aplikace,
+terminál a spuštěné skripty spotřebovávají prostředky Raspberry Pi.
 
 ## STELAB Remote přes přihlášení Home Assistantu
 
@@ -169,8 +202,8 @@ Alternativně lze sestavit lokálně s Docker Buildx:
 
 ```bash
 docker buildx build --platform linux/arm64 \
-  --build-arg BUILD_VERSION=0.1.0-rc.3 \
-  --tag stelab-kiosk:0.1.0-rc.3 --load ./stelab-kiosk
+  --build-arg BUILD_VERSION=0.1.0-rc.4 \
+  --tag stelab-kiosk:0.1.0-rc.4 --load ./stelab-kiosk
 ```
 
 Lokální kontroly nevyžadují Docker:

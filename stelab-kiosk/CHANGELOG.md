@@ -1,3 +1,15 @@
+# 0.1.0-rc.4 (unreleased candidate)
+
+- Add a static green/cyan STELAB wallpaper and a PCManFM desktop with launchers
+  for Dashboard, Web, ChatGPT, Files, Terminal, Shared files and Text editor.
+- Add Command+M and an Openbox menu item to reveal/hide the desktop while
+  preserving all running application windows and existing shortcuts.
+- Seed desktop settings, icon files/positions and wallpaper in /config/desktop
+  only when missing; keep user changes over restarts and image updates.
+- Use the existing PCManFM, a private D-Bus session and a credential-scrubbed
+  environment. Keep AI app permissions and Chromium GPU/profile settings intact.
+- Candidate only: full ARM64 build and hardware acceptance remain pending.
+
 # 0.1.0-rc.3
 
 - Add optional same-screen noVNC through Home Assistant Ingress / STELAB Remote.

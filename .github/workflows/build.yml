@@ -72,6 +72,7 @@ jobs:
               apt-get install -y --no-install-recommends xvfb
               python3 /tests/smoke_remote_access.py
               python3 /tests/smoke_chatgpt.py
+              python3 /tests/smoke_desktop.py
             '
       - uses: actions/upload-artifact@v4
         with:

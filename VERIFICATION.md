@@ -1,3 +1,15 @@
+# Kandidát 0.1.0-rc.4 — dosud nezveřejněn
+
+Nové soubory plochy prošly lokální validací syntaxe a všech 23 stávajících testů.
+Samostatně ověřeno opakované vytvoření plochy: uživatelské pozadí, změněná
+ikona i konfigurace zůstaly zachované; vytvořilo se všech sedm zástupců.
+ARM64 sestavení, skutečné
+zobrazení ikon a PCManFM nad Xorg zatím nejsou pro tento kandidát ověřené.
+Před vydáním je nutné spustit build a integrační test plochy; nikdy nespouštět
+testovací Xorg proti fyzickému displeji vedle běžícího kiosku.
+
+Níže je historický záznam už zveřejněné rc.3, nikoliv ověření rc.4:
+
 # Ověření vydání 0.1.0-rc.3 — 2026-10-20
 
 - Lokální kontrola zdrojů a 23 testů prošly. Sedm nových kontrol ověřilo

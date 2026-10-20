@@ -434,7 +434,7 @@ cp /etc/xdg/openbox/stelab-menu.xml ~/.config/openbox/menu.xml
 # Only load the supplied menu; Debian's optional generated menu is not installed.
 sed -i '\|<file>/var/lib/openbox/debian-menu.xml</file>|d' "$RC_XML"
 # Delete selected old key bindings
-awk 'BEGIN{skip=0} /<keybind key="(C-A-Left|C-A-Right|W-d|W-e|W-g|W-Return|W-Up|W-Down|C-A-o|C-A-k)">/{skip=1} /<\/keybind>/ && skip{skip=0; next} !skip{print}' "$RC_XML" > /tmp/rc.new.xml
+awk 'BEGIN{skip=0} /<keybind key="(C-A-Left|C-A-Right|W-d|W-e|W-g|W-m|W-Return|W-Up|W-Down|C-A-o|C-A-k)">/{skip=1} /<\/keybind>/ && skip{skip=0; next} !skip{print}' "$RC_XML" > /tmp/rc.new.xml
 mv /tmp/rc.new.xml "$RC_XML"
 
 # Add new key bindings
@@ -470,6 +470,9 @@ cat <<'EOF' > /tmp/new_keybinds.xml
   <keybind key="W-e"><action name="Execute"><command>/usr/local/bin/stelab-desktop files</command></action></keybind>
   <keybind key="W-d"><action name="Execute"><command>/usr/local/bin/stelab-desktop dashboard</command></action></keybind>
   <keybind key="W-g"><action name="Execute"><command>/usr/local/bin/stelab-chatgpt</command></action></keybind>
+
+  <!-- Show/hide the desktop without closing dashboard or applications -->
+  <keybind key="W-m"><action name="ToggleShowDesktop"/></keybind>
 
   <!-- Next window: Ctrl+Alt+Shift+Right -->
   <keybind key="C-A-S-Right">
@@ -513,6 +516,14 @@ if ! kill -0 "$O_PID" 2>/dev/null; then  #Checks if process alive
     exit 1
 fi
 bashio::log.info "$WINMGR window manager started successfully..."
+
+# PCManFM draws wallpaper and launchers below the existing application windows.
+python3 /desktop_session.py run &
+DESKTOP_PID=$!
+sleep 0.5
+if ! kill -0 "$DESKTOP_PID" 2>/dev/null; then
+    bashio::log.warning "Desktop manager failed; kiosk remains available"
+fi
 
 #### Configure screen timeout (Note: DPMS needs to be enabled/disabled *after* starting window manager)
 xset +dpms  #Turn on DPMS

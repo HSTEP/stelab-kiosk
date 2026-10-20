@@ -1,4 +1,11 @@
-# STELAB Kiosk — 0.1.0-rc.3
+# STELAB Kiosk — 0.1.0-rc.4
+
+**Lokální kandidát; dosud nezveřejněn ani otestován na Pi.**
+
+Zelenomodrá plocha STELAB a ikony se zobrazí přes ⌘M. Jedno kliknutí otevírá
+Dashboard, Web, ChatGPT, Soubory, Terminál, Sdílené soubory a Textový editor.
+Vlastní pozadí `/config/desktop/wallpaper.png`, nastavení a ikony v
+`/config/desktop/home` se při dalších startech nepřepisují.
 
 Experimentální Debian desktop pro Raspberry Pi 5 a HAOS: Chromium, Openbox,
 terminál xterm, správce souborů PCManFM a editor Mousepad.
