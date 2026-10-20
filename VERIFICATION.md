@@ -13,7 +13,7 @@ Prošlo:
 - Zveřejněný HA ARM64 Debian base tag trixie-2026.10.0 ověřen v GHCR webu.
 
 Neprovedeno:
-- Publikování GHCR obrazu a ověření anonymního pull.
+- Úplný Docker pull a spuštění obrazu na hardware.
 - Test knihovny VT na Linuxu, start Xorgu, přihlášení, V3D renderer Chromia,
   HDMI audio, dotyk, reconnect Bluetooth, desktop a restart na Raspberry Pi 5.
 - Formální validace kompletního manifestu Home Assistant Supervisorem.
@@ -26,4 +26,9 @@ Přítomnost /usr/lib/aarch64-linux-gnu/dri/v3d_dri.so ověřena během sestaven
 Artifact stelab-kiosk-arm64-0.1.0-rc.1 má přibližně 448 MB (uchování 7 dní).
 Tím není potvrzeno spuštění na Raspberry Pi ani hardwarová akcelerace.
 
-Zdrojový repozitář je veřejný. GHCR a hardware acceptance zatím neproběhly.
+Zdrojový repozitář i obraz jsou nyní veřejné. Publikace #1 prošla:
+https://github.com/HSTEP/stelab-kiosk/actions/runs/39408626834
+Manifest ARM64 a čtení jednoho bajtu z každé z 12 vrstev ověřeny anonymním
+registry tokenem, bez uložených uživatelských přihlašovacích údajů.
+Digest indexu: sha256:33ded578d2ee9b1e2fbf69816967bc4a7f1de5369553874c4c0214c75491fe90.
+Podrobnosti v REGISTRY-VERIFICATION.json. Nejde o úplný Docker pull ani hardware test.

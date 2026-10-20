@@ -1,7 +1,8 @@
 # Publikování — až po výslovném svolení HSTEP
 
-Zdrojový repozitář je veřejný a první testovací build prošel. Publikování obrazu
-v GHCR a změna HA vyžadují další svolení; dosud nebyly provedeny.
+Zdrojový repozitář i obraz `0.1.0-rc.1` jsou se svolením HSTEP veřejné.
+Publikace prošla; anonymně ověřen manifest ARM64 a přístup ke všem vrstvám.
+Na HA dosud nebylo nic měněno. Následující postup slouží pro další vydání.
 
 1. Vytvořit veřejný GitHub repozitář `HSTEP/stelab-kiosk`, default branch `main`.
    Nahrát celý obsah tohoto repozitáře včetně `.github/workflows` a GPL licence.

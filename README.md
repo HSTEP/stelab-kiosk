@@ -8,9 +8,26 @@ Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 **Stav: 0.1.0-rc.1, první ARM64 sestavení úspěšné.** Zdrojové kontroly a sedm
 testů fullscreen prošly také na GitHubu. [První build](https://github.com/HSTEP/stelab-kiosk/actions/runs/39407259124)
 sestavil Chromium 155.0.8059.79 na Debianu 13 a ověřil přítomnost knihovny V3D.
-Zdrojové soubory jsou veřejné; obraz dosud není publikovaný v GHCR.
+Zdrojové soubory i [obraz v GHCR](https://github.com/HSTEP/stelab-kiosk/pkgs/container/stelab-kiosk-aarch64)
+jsou veřejné. [Publikace](https://github.com/HSTEP/stelab-kiosk/actions/runs/39408626834)
+prošla; anonymně ověřen manifest ARM64 a čtení ze všech 12 vrstev obrazu.
+Úplný Docker pull a spuštění na hardware tím ještě potvrzeny nejsou.
 Hardware Raspberry Pi 5 — skutečná akcelerace, HDMI zvuk, touch a Bluetooth —
 zatím otestovaný není. Na Home Assistantu nebyla provedena žádná změna.
+
+## Přidání do Home Assistantu
+
+V obchodě s doplňky otevři **⋮ → Repozitáře** a přidej:
+
+```text
+https://github.com/HSTEP/stelab-kiosk
+```
+
+Nainstaluj **STELAB Kiosk**, zatím ho nespouštěj. Ponech automatický start a
+watchdog vypnuté, přenes konfiguraci z původního doplňku. Před spuštěním nového
+vždy zastav původní kiosk. Podrobný postup a návrat jsou níže.
+Pokud experimentální doplněk není vidět, zkontroluj pokročilý režim profilu a
+obnov katalog doplňků. Původní `local_welizard_browser` neodinstalovávej.
 
 ## Co je připraveno
 
