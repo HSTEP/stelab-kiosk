@@ -87,6 +87,7 @@ jobs:
               apt-get install -y --no-install-recommends xvfb
               python3 /tests/smoke_remote_access.py
               python3 /tests/smoke_chatgpt.py
+              python3 /tests/smoke_kiosk_sandbox.py
               python3 /tests/smoke_desktop.py
             '
       - name: Publish the tested image

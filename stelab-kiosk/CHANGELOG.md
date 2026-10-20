@@ -1,3 +1,15 @@
+# 0.1.0-rc.5 (unreleased candidate)
+
+- Run kiosk Chromium as dedicated UID1001 with its native sandbox enabled.
+- Install Debian chromium-sandbox and remove the legacy --no-sandbox flag.
+- Preserve /config/chromium-profile while migrating ownership; keep GPU argv.
+- Keep a separate persistent browser home and a credential-free environment.
+- Retain mapped DRM device access and system PulseAudio connection.
+- Recognize Chromium's rewritten process title so graceful shutdown flushes
+  cookies before the display is stopped. Do not select child renderers.
+- Add a real root-to-user cookie/localStorage migration and sandbox test.
+- Passed on HAOS in a disposable container; full image build pending.
+
 # 0.1.0-rc.4
 
 - Add a static green/cyan STELAB wallpaper and a PCManFM desktop with launchers

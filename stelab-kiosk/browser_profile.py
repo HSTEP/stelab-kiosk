@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import shlex
 from urllib.parse import urlparse
 
 DEFAULT_PREFERENCES = {
@@ -51,14 +52,23 @@ def matching_browser(argv: list[str], profile: Path, port: int) -> bool:
                 and option('--remote-debugging-port') == str(port))
 
 
+def process_argv(raw: bytes) -> list[str]:
+    argv = raw.rstrip(b'\0').decode().split('\0')
+    # Chromium may rewrite argv[0] to the complete process title under D-Bus.
+    # Decode only known executable prefixes; never evaluate a shell command.
+    if len(argv) == 1 and argv[0].startswith(('/usr/lib/chromium/chromium ', '/usr/bin/chromium ')):
+        return shlex.split(argv[0])
+    return argv
+
+
 def browser_pids(profile: Path, port: int) -> list[int]:
     found = []
     for process in Path('/proc').glob('[0-9]*'):
         try:
-            argv = process.joinpath('cmdline').read_bytes().rstrip(b'\0').decode().split('\0')
+            argv = process_argv(process.joinpath('cmdline').read_bytes())
             if matching_browser(argv, profile, port):
                 found.append(int(process.name))
-        except (OSError, UnicodeError):
+        except (OSError, UnicodeError, ValueError):
             continue
     return found
 

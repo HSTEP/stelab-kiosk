@@ -211,7 +211,6 @@ resolve_browser_binary() {
                 exit 1
             fi
             BROWSER_FLAGS=(
-                --no-sandbox
                 --no-first-run
                 --no-default-browser-check
                 --disable-session-crashed-bubble
@@ -226,7 +225,7 @@ resolve_browser_binary() {
                 --remote-debugging-address=127.0.0.1
                 --remote-debugging-port="$CHROMIUM_DEVTOOLS_PORT"
                 --user-data-dir="$CHROMIUM_PROFILE_DIR"
-                --disk-cache-dir=/tmp/haoskiosk-cache
+                --disk-cache-dir=/run/stelab-browser/cache
                 --disk-cache-size=1
                 --media-cache-size=1
                 --window-position=0,0
@@ -254,8 +253,7 @@ browser_process_running() {
 
 seed_chromium_preferences() {
     [ "$BROWSER_ENGINE" = "chromium" ] || return 0
-    python3 /browser_profile.py init --profile "$CHROMIUM_PROFILE_DIR"
-    chmod 700 "$CHROMIUM_PROFILE_DIR"
+    python3 /kiosk_browser.py --prepare "$CHROMIUM_PROFILE_DIR"
 }
 
 resolve_browser_binary
@@ -775,7 +773,7 @@ if [ "$DEBUG_MODE" != true ]; then
     fi
 
     BROWSER_STARTED=true
-    "$BROWSER" "${BROWSER_FLAGS[@]}" "$HA_URL/$HA_DASHBOARD" &
+    /usr/local/bin/stelab-browser &
     bashio::log.info "Launching $BROWSER browser(PID=$!): $HA_URL/$HA_DASHBOARD"
 
     if [ "$BROWSER_ENGINE" = "chromium" ]; then

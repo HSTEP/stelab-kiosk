@@ -1,3 +1,35 @@
+# Kandidát 0.1.0-rc.5 — Chromium sandbox
+
+Dosud nezveřejněn. Kompletní obraz nové verze ještě nebyl sestaven.
+Běžící uživatelský doplněk ani jeho profily nebyly změněny.
+
+Ověřeno přímo na uživatelově HAOS / Raspberry Pi v dočasném kontejneru
+odvozeném z rc.4, bez host zařízení, host sítě nebo uživatelských dat:
+
+- Instalovány pouze chromium-sandbox a Xvfb; žádný stávající balíček se neupgradoval.
+- Stejný rootem vytvořený testovací profil převeden na UID1001.
+- Skutečné cookies a localStorage zachované při převodu i následném restartu.
+- Stránka chrome://sandbox potvrdila aktivní sandbox a adekvátní izolaci.
+- Skutečný proces Chromia běžel jako UID1001 bez --no-sandbox.
+- Chromium se ve všech třech fázích korektně ukončilo před Xvfb.
+- Opraveno rozpoznání procesu: Chromium pod D-Bus přepisuje argv[0] na celý
+  procesový titulek, což předchozí detekce hlavního procesu nerozpoznala.
+- Ověřena oprava vlastnictví souboru po simulovaném návratu na starší root verzi.
+- Lokálně prošlo všech 25 testů a validace syntaxe/metadata.
+
+Zachována cesta /config/chromium-profile a dosavadní parametry GPU.
+ChatGPT ponechává samostatný UID1000 a svůj nezměněný domov.
+Nový domov prohlížeče: /config/chromium-home, UID1001.
+Přidávají se skupiny pouze podle skutečných DRM zařízení; PulseAudio připojení
+se předává čistému prostředí bez HA hesel a Supervisor tokenů.
+
+Před vydáním zbývá úplné ARM64 sestavení se všemi integračními testy.
+Po vydání je nutné na fyzickém displeji zkontrolovat V3D, zvuk a ovládání.
+Testovací cookie není ověřením přihlášení ke skutečnému účtu Google; server může
+relaci odvolat nezávisle na zachování profilu.
+
+Historická ověření:
+
 # Ověření vydání 0.1.0-rc.4 — 2026-10-20
 
 Runtime commit: `3fe1353`. Native ARM64 publish workflow:

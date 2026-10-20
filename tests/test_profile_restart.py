@@ -17,6 +17,15 @@ def load(name):
 profile = load('browser_profile')
 ports = load('startup_ports')
 
+class ProcessTitleTests(unittest.TestCase):
+    def test_rewritten_browser_title_still_identifies_our_profile(self):
+        raw = b'/usr/lib/chromium/chromium --user-data-dir=/config/chromium-profile --remote-debugging-port=9222 http://localhost:8123/\0'
+        self.assertTrue(profile.matching_browser(profile.process_argv(raw), Path('/config/chromium-profile'), 9222))
+
+    def test_rewritten_renderer_title_is_never_closed_as_browser(self):
+        raw = b'/usr/lib/chromium/chromium --type=renderer --user-data-dir=/config/chromium-profile --remote-debugging-port=9222\0'
+        self.assertFalse(profile.matching_browser(profile.process_argv(raw), Path('/config/chromium-profile'), 9222))
+
 class ProfileTests(unittest.TestCase):
     def test_existing_profile_and_auth_files_remain_byte_for_byte(self):
         with tempfile.TemporaryDirectory() as folder:

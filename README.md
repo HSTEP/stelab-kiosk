@@ -5,7 +5,7 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.4 — plocha STELAB s tapetou a ikonami; zachování profilů.**
+**Lokální kandidát rc.5 — Chromium pod samostatným uživatelem se sandboxem. Poslední zveřejněná verze: rc.4.**
 [ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39457252498)
 a [vydávací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39446283466)
 prošla. Před publikací bylo ověřeno zachování profilu Chromia, skutečné VNC
@@ -57,6 +57,19 @@ obnov katalog doplňků. Původní `local_welizard_browser` neodinstalovávej.
   Xorg. Neprovádí se původní remount `/dev` ani mazání `/dev/tty0`.
 - Před startem kontroluje dostupnost REST a Chromium DevTools portů. To pomáhá
   odhalit spuštěný původní kiosk, ale není to univerzální zámek displeje.
+
+## Chromium sandbox (kandidát rc.5)
+
+Kiosk prohlížeč má vlastní UID1001 a zapnutý sandbox; původní parametr
+`--no-sandbox` se nepoužívá. Při prvním startu se zachová obsah stávajícího
+`/config/chromium-profile` a převede se vlastnictví souborů. Profil se nekopíruje
+ani nemaže. Nový domov `/config/chromium-home` je trvalý, cache je v `/run`.
+Přepínač pro vypnutí sandboxu není dostupný jako nastavení ani automatická záloha.
+
+Samotný aktivní sandbox byl ověřen na HAOS v izolovaném kontejneru; úplné
+sestavení kandidáta a ověření fyzického displeje jsou zatím před vydáním.
+Chromium stále nenabízí plnohodnotnou Google Chrome Sync; zachovávání webových
+přihlášení je oddělené od přihlášení profilu prohlížeče pro synchronizaci.
 
 ## Plocha, ikony a trvalé změny (rc.4)
 
@@ -202,8 +215,8 @@ Alternativně lze sestavit lokálně s Docker Buildx:
 
 ```bash
 docker buildx build --platform linux/arm64 \
-  --build-arg BUILD_VERSION=0.1.0-rc.4 \
-  --tag stelab-kiosk:0.1.0-rc.4 --load ./stelab-kiosk
+  --build-arg BUILD_VERSION=0.1.0-rc.5 \
+  --tag stelab-kiosk:0.1.0-rc.5 --load ./stelab-kiosk
 ```
 
 Lokální kontroly nevyžadují Docker:

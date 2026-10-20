@@ -48,6 +48,8 @@ keys = [node.attrib['key'] for node in keyboard]
 assert len(keys) == len(set(keys))
 assert {'W-Down', 'W-Up', 'W-Return', 'W-e', 'W-d'} <= set(keys)
 assert '--start-fullscreen' in run and '\n                --kiosk\n' not in run
+assert '--no-sandbox' not in run
+assert 'chromium-sandbox' in dockerfile
 assert '--disable-gpu\n' not in run and '--use-angle=swiftshader' not in run
 assert 'rm -f /dev/tty0' not in run and 'remount,rw /dev' not in run
 # Schema keys added by STELAB are explained to the HA UI.

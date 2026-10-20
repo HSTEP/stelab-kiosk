@@ -6,7 +6,7 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=0.1.0-rc.4
+ARG BUILD_VERSION=0.1.0-rc.5
 ARG CHATGPT_VERSION=26.1013.40934
 ARG CHATGPT_SHA256=9ab2cbbaf33cebeaa1e06eb5cab78128936f927a0d97bf00e40694e5f31c629b
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \
@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openbox xterm pcmanfm mousepad adwaita-icon-theme dbus-x11 dconf-cli libglib2.0-bin \
     gsettings-desktop-schemas onboard at-spi2-core gir1.2-atspi-2.0 \
     unclutter-xfixes fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji \
-    chromium pulseaudio-utils libasound2-plugins \
+    chromium chromium-sandbox pulseaudio-utils libasound2-plugins \
     python3 python3-xlib python3-aiohttp python3-venv git bubblewrap x11vnc novnc \
     && rm -rf /var/lib/apt/lists/*
 # Pin the official vendor package, architecture and bytes for repeatable builds.
@@ -32,11 +32,13 @@ RUN curl -fSL --proto '=https' --tlsv1.2 --retry 3 \
     && apt-get update && apt-get install -y --no-install-recommends /tmp/chatgpt.deb \
     && rm /tmp/chatgpt.deb && rm -rf /var/lib/apt/lists/* \
     && useradd --uid 1000 --user-group --home-dir /config/chatgpt/home \
-       --no-create-home --shell /bin/bash stelab-ai
+       --no-create-home --shell /bin/bash stelab-ai \
+    && useradd --uid 1001 --user-group --home-dir /config/chromium-home \
+       --no-create-home --shell /usr/sbin/nologin stelab-browser
 COPY --from=vtbuild /tmp/tty0_override.so /usr/lib/tty0_override.so
 COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
-COPY browser_profile.py startup_ports.py remote_access.py desktop_session.py /
+COPY browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run
