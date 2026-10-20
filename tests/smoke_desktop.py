@@ -49,7 +49,10 @@ def main():
         kind = d.intern_atom('_NET_WM_WINDOW_TYPE_DESKTOP')
         found = []
         def find_desktop():
-            for w in root.query_tree().children:
+            clients = root.get_full_property(d.intern_atom('_NET_CLIENT_LIST'), X.AnyPropertyType)
+            windows = ([d.create_resource_object('window', int(w)) for w in clients.value]
+                       if clients is not None else root.query_tree().children)
+            for w in windows:
                 value = w.get_full_property(prop, X.AnyPropertyType)
                 if value is not None and kind in value.value and w.get_attributes().map_state == X.IsViewable:
                     found[:] = [w]
@@ -63,7 +66,6 @@ def main():
             return image is not None and len(set(image.data)) > 32
         wait_for(wallpaper_drawn, 'Desktop remained blank instead of drawing wallpaper')
         subprocess.run(['wmctrl', '-k', 'on'], check=True)
-        showing = root.get_full_property(d.intern_atom('_NET_SHOWING_DESKTOP'), X.AnyPropertyType)
         wait_for(lambda: root.get_full_property(d.intern_atom('_NET_SHOWING_DESKTOP'), X.AnyPropertyType).value[0] == 1,
                  'Openbox did not reveal desktop')
         subprocess.run(['wmctrl', '-k', 'off'], check=True)
