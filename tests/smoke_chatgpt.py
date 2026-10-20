@@ -1,4 +1,5 @@
 """Check the official ARM64 desktop app under Xvfb without signing in."""
+import json
 import os
 from pathlib import Path
 import signal
@@ -40,24 +41,33 @@ if __name__ == '__main__':
             return result.stdout.strip()
 
         wait_for(window_ready, timeout=60)
-        processes = []
-        for directory in Path('/proc').iterdir():
-            if not directory.name.isdecimal():
-                continue
-            try:
-                argv = (directory/'cmdline').read_bytes().split(b'\0')
-                if not argv or argv[0] != b'/usr/lib/chatgpt/ChatGPT':
-                    continue
-                status = (directory/'status').read_text()
-                uid = next(line for line in status.splitlines() if line.startswith('Uid:')).split()[1]
-                assert uid == '1000', status
-                env = (directory/'environ').read_bytes()
-                assert b'SUPERVISOR_TOKEN=' not in env and b'HA_PASSWORD=' not in env
-                assert b'--no-sandbox' not in argv
-                processes.append(directory.name)
-            except FileNotFoundError:
-                continue
-        assert processes, 'No official ChatGPT process found'
+        # Electron can replace argv[0] with its application title. Inspect the
+        # executable as the owning user (root in a Docker container need not
+        # have CAP_SYS_PTRACE for reading another UID's /proc entries).
+        inspect = r"""
+import json
+from pathlib import Path
+records = []
+for directory in Path('/proc').iterdir():
+    if not directory.name.isdecimal():
+        continue
+    try:
+        executable = (directory/'exe').readlink()
+        if str(executable) != '/usr/lib/chatgpt/ChatGPT':
+            continue
+        argv = (directory/'cmdline').read_bytes().split(b'\0')
+        env = (directory/'environ').read_bytes()
+        uid = next(line for line in (directory/'status').read_text().splitlines() if line.startswith('Uid:')).split()[1]
+        records.append({'uid': uid, 'no_sandbox': b'--no-sandbox' in argv,
+                        'has_secrets': b'SUPERVISOR_TOKEN=' in env or b'HA_PASSWORD=' in env})
+    except (FileNotFoundError, PermissionError):
+        continue
+print(json.dumps(records))
+"""
+        processes = json.loads(subprocess.check_output(
+            ['runuser', '-u', 'stelab-ai', '--', 'python3', '-c', inspect], text=True))
+        assert processes, 'No official ChatGPT process found via /proc/exe'
+        assert all(p['uid'] == '1000' and not p['has_secrets'] and not p['no_sandbox'] for p in processes), processes
         print('PASS: official ChatGPT window, non-root UID, clean environment, persistent home, sandbox not disabled')
     finally:
         if app and app.poll() is None:
