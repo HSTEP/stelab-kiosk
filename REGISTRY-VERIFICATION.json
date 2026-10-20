@@ -1,11 +1,9 @@
 {
-  "image": "ghcr.io/hstep/stelab-kiosk-aarch64:0.1.0-rc.2",
-  "digest": "sha256:0aeba14adfa796cff6ef1d57722667a29f2b27526bda0bdb4ae287c2b64acf6b",
+  "image": "ghcr.io/hstep/stelab-kiosk-aarch64:0.1.0-rc.3",
+  "digest": "sha256:73f92dec5a6913340fe230b34c8a81ccc5af5e03fd9884183fe8a98ef4b567b2",
   "platform": "linux/arm64",
   "public_manifest_verified": true,
-  "layer_access_verified": 14,
-  "compressed_layer_bytes": 483053098,
-  "method": "Anonymous registry token; manifest/config GET and one-byte read from each layer. No saved credentials, Docker runtime or full image execution.",
-  "workflow": "https://github.com/HSTEP/stelab-kiosk/actions/runs/39418628719",
-  "verified_on": "2026-10-20"
+  "layer_access_verified": 20,
+  "compressed_layer_bytes": 1243477043,
+  "method": "Anonymous registry token; manifest/config GET and one-byte read from each layer. No saved credentials, Docker runtime or full image execution."
 }

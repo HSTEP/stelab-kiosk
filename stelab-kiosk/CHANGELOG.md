@@ -1,4 +1,4 @@
-# 0.1.0-rc.3 (candidate, not published)
+# 0.1.0-rc.3
 
 - Add optional same-screen noVNC through Home Assistant Ingress / STELAB Remote.
 - Keep remote control disabled by default; admin sidebar panel, Supervisor-only

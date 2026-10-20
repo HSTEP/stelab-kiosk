@@ -5,10 +5,15 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.3 — připravená aktualizace se vzdálenou plochou, dosud nevydaná.**
-Poslední vydaná verze je 0.1.0-rc.2. Její test Chromia zachoval cookies,
-localStorage, Preferences a Local State přes dvě spuštění. Nová verze vyžaduje
-sestavení a test vzdálené plochy na ARM64 před publikací.
+**Stav: 0.1.0-rc.3 — zveřejněná aktualizace se STELAB Remote a aplikací ChatGPT.**
+[ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39445548335)
+a [vydávací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39446283466)
+prošla. Před publikací bylo ověřeno zachování profilu Chromia, skutečné VNC
+spojení a pohyb myši i otevření oficiálního ChatGPT okna pod běžným uživatelem
+bez HA tajemství v jeho prostředí. Obraz je anonymně dostupný z GHCR.
+
+Průchod přes skutečný HA Ingress / Cloudflare a přihlášení ChatGPT s následným
+restartem je ještě nutné ověřit na zařízení. Příprava vydání neměnila běžící HA.
 
 ## Oprava restartu v 0.1.0-rc.2
 
@@ -60,7 +65,7 @@ obrazovku `:0`, která je připojená přes HDMI. Používá existující přihl
 Home Assistantu a existující adresu HA, takže není potřeba další doména, VPN,
 Cloudflare Access ani aktivace jeho tarifu.
 
-Po vydání, aktualizaci a ověření zálohy:
+Po aktualizaci doplňku a ověření zálohy:
 
 1. V konfiguraci STELAB Kiosku zapni **Remote desktop through Home Assistant**
    (`remote_access: true`), ulož a restartuj pouze STELAB Kiosk.

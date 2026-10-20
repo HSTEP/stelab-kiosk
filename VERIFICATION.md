@@ -1,19 +1,34 @@
-# Ověření kandidáta 0.1.0-rc.3 — 2026-10-20
+# Ověření vydání 0.1.0-rc.3 — 2026-10-20
 
-- Lokální kontrola zdrojů prošla.
-- 23 lokálních testů prošlo: původních 16 a sedm nových kontrol brány.
-- Ověřeno odmítnutí cizí TCP adresy na HTTP i WebSocket cestách, i s podvrženými
-  ingress/user/IP hlavičkami; vypnutý stav, statické soubory, odmítnutí symlinku
-  mimo složku assets a obousměrný přenos binárních dat přes testovací TCP server.
-- Produkční povolená adresa nemá přepínač ani proměnnou pro obejití ochrany.
-- Nové CI kroky připravují jednorázový kontejner bez HA zařízení, přidají pouze
-  do něj Xvfb a ověří skutečný x11vnc RFB handshake, loopback bind i pohyb myši.
-  Tyto kroky zatím NEBYLY spuštěné. Xvfb není součástí vydávaného obrazu.
-- Neprovedeno: ARM64 sestavení této verze, reálný HA Ingress/Cloudflare průchod,
-  noVNC v prohlížeči, start/stop na Pi a reálná vzdálená relace.
-- Na běžícím HA ani v Cloudflare nebylo při této přípravě nic změněno.
+- Lokální kontrola zdrojů a 23 testů prošly. Sedm nových kontrol ověřilo
+  odmítnutí cizí TCP adresy i s podvrženými ingress/user/IP hlavičkami, vypnutý
+  stav, statické soubory, odmítnutí symlinku mimo assets a binární přenos.
+- Nativní ARM64 testovací sestavení prošlo:
+  https://github.com/HSTEP/stelab-kiosk/actions/runs/39445548335
+- Vydávací sestavení finálního runtime commitu 37ab4d9 prošlo a publikovalo obraz:
+  https://github.com/HSTEP/stelab-kiosk/actions/runs/39446283466
+- Oba testy použily skutečné Chromium a ověřily cookie/localStorage/Preferences/
+  Local State přes restart. GPU hardware tento headless test neověřuje.
+- Jednorázový kontejner s Xvfb ověřil skutečný x11vnc RFB handshake, výhradně
+  loopback bind s vypnutým IPv6, WebSocket přenos, pohyb myši a ukončení serveru.
+  Xvfb není součástí zveřejněného obrazu. Kiosk /run.sh se v CI nespouštěl.
+- Oficiální ChatGPT ARM64 26.1013.40934 otevřel viditelné okno. Test ověřil UID
+  1000, nepřítomnost HA_PASSWORD/SUPERVISOR_TOKEN v prostředí a nepoužití
+  --no-sandbox. Závěrečný test navíc ověřil, že root příprava nesleduje symlink
+  uvnitř AI domova, a zachování uživatelových souborů přes opakovanou přípravu.
+- Balíček aplikace má ověřená vendor metadata a SHA-256. Omezení agentových
+  příkazů, přihlášení a zachování skutečné přihlášené relace vyžadují zařízení.
+- Anonymně ověřen manifest/config a čtení prvního bajtu ze všech 20 vrstev.
+  Viz REGISTRY-VERIFICATION.json. Komprimované vrstvy mají celkem 1 243 477 043 B.
+  Nejde o úplný Docker pull ani o spuštění obrazu na Pi.
+- Digest: sha256:73f92dec5a6913340fe230b34c8a81ccc5af5e03fd9884183fe8a98ef4b567b2
 - Dodaný GPU report na zařízení potvrdil ANGLE/Broadcom V3D 7.1.10.2 a Mesa
-  25.0.7, GPU crash count 0. GPU parametry se v rc.3 nemění.
+  25.0.7, GPU crash count 0. Parametry GPU se v rc.3 nemění.
+- Neprovedeno: reálný HA Ingress/Cloudflare průchod a ovládání HDMI plochy,
+  přihlášení ChatGPT, agentův shell sandbox na HAOS a restart s tímto přihlášením.
+- Na běžícím HA ani v Cloudflare nebylo při přípravě a vydání nic změněno.
+
+Historické ověření rc.2 (registry report: REGISTRY-VERIFICATION-rc.2.json):
 
 # Ověření opravy 0.1.0-rc.2 — 2026-10-20
 

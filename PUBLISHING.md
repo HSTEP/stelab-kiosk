@@ -1,6 +1,6 @@
 # Publikování — až po výslovném svolení HSTEP
 
-Zdrojový repozitář i obraz `0.1.0-rc.2` jsou se svolením HSTEP veřejné.
+Zdrojový repozitář a obrazy `0.1.0-rc.2` i `0.1.0-rc.3` jsou se svolením HSTEP veřejné.
 Publikace prošla; anonymně ověřen manifest ARM64 a přístup ke všem vrstvám.
 Na HA dosud nebylo nic měněno. Následující postup slouží pro další vydání.
 
@@ -21,7 +21,7 @@ Na HA dosud nebylo nic měněno. Následující postup slouží pro další vyd�
    balíčku. Ověřit anonymní stažení přes prázdnou konfiguraci Dockeru:
 
    ```bash
-   docker --config /tmp/stelab-anonymous-pull pull ghcr.io/hstep/stelab-kiosk-aarch64:0.1.0-rc.2
+   docker --config /tmp/stelab-anonymous-pull pull ghcr.io/hstep/stelab-kiosk-aarch64:0.1.0-rc.3
    ```
 
    Použít novou prázdnou složku. Až úspěšný anonymní pull potvrzuje použitelnost
@@ -29,7 +29,7 @@ Na HA dosud nebylo nic měněno. Následující postup slouží pro další vyd�
 6. Teprve poté přidat repozitář do HA a provést postup přepnutí a testy v README.
    První veřejná verze je experimentální release candidate, nikoliv stabilní 1.0.
 
-Cílový obraz: `ghcr.io/hstep/stelab-kiosk-aarch64:0.1.0-rc.2`.
+Cílový obraz: `ghcr.io/hstep/stelab-kiosk-aarch64:0.1.0-rc.3`.
 `image` v manifestu obsahuje placeholder `{arch}`, který Supervisor nahradí za
 `aarch64`; `version` je přesný tag. Před publikací obrazu nelze tuto konfiguraci
 instalovat jako GHCR doplněk. Manifest v repozitáři tedy může být do prvního
