@@ -1,3 +1,22 @@
+# Ověření opravy 0.1.0-rc.2 — 2026-10-20
+
+- 16 testů prošlo lokálně i na GitHubu: uchování profilu, idempotentní inicializace,
+  omezení ukončování na vlastní browser/profil/port, fullscreen a porty TIME_WAIT.
+- Nativní ARM64 build a test skutečného Chromia prošly:
+  https://github.com/HSTEP/stelab-kiosk/actions/runs/39418146659
+- Skutečné Chromium během testu zachovalo persistentní cookie a localStorage
+  mezi dvěma spuštěními. Startup zachoval jeho Preferences a Local State.
+  Browser.close ukončil proces před zastavením testovacího prostředí.
+- Vydávací workflow tento test zopakovalo před push obrazu a prošlo:
+  https://github.com/HSTEP/stelab-kiosk/actions/runs/39418628719
+- Anonymně ověřen ARM64 manifest, config a čtení ze všech 14 vrstev obrazu.
+  Viz REGISTRY-VERIFICATION.json. Nejedná se o úplný Docker pull ani start na Pi.
+- Změna řízení S6 a konkrétní Google/YouTube přihlášení vyžadují ještě kontrolu
+  po aktualizaci na zařízení uživatele. GPU parametry se nezměnily; přiložený
+  log rc.1 s chybou prvního EGL pokusu sám o sobě nepotvrzuje použitý renderer.
+
+Původní ověření rc.1 následuje jako historický záznam.
+
 # Ověření 2026-10-20
 
 Prošlo:

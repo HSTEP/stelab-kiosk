@@ -16,3 +16,7 @@ fullscreen shortcuts, persistent script/file directories, build/release workflow
 
 The VT library is experimental on Pi 5 and unchanged from upstream. Native
 VT mode is available for diagnosis. Neither is verified here on hardware.
+
+0.1.0-rc.2: preserve profile startup data; S6 service plus owned-browser graceful
+shutdown; restart-aware port preflight; Onboard AT-SPI typelib; native ARM64
+builds and real Chromium persistence test. Original GPU flags retained.

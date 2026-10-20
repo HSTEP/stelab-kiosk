@@ -5,19 +5,18 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.1, první ARM64 sestavení úspěšné.** Zdrojové kontroly a sedm
-testů fullscreen prošly také na GitHubu. [První build](https://github.com/HSTEP/stelab-kiosk/actions/runs/39407259124)
-sestavil Chromium 155.0.8059.79 na Debianu 13 a ověřil přítomnost knihovny V3D.
-Zdrojové soubory i [obraz v GHCR](https://github.com/HSTEP/stelab-kiosk/pkgs/container/stelab-kiosk-aarch64)
-jsou veřejné. [Publikace](https://github.com/HSTEP/stelab-kiosk/actions/runs/39408626834)
-prošla; anonymně ověřen manifest ARM64 a čtení ze všech 12 vrstev obrazu.
-Úplný Docker pull a spuštění na hardware tím ještě potvrzeny nejsou.
-Hardware Raspberry Pi 5 — skutečná akcelerace, HDMI zvuk, touch a Bluetooth —
-zatím otestovaný není. Na Home Assistantu nebyla provedena žádná změna.
+**Stav: 0.1.0-rc.2, veřejná oprava restartu a zachování profilu.**
+[16 testů a test skutečného Chromia](https://github.com/HSTEP/stelab-kiosk/actions/runs/39418146659)
+prošly na nativním ARM64 serveru. Test ověřil zachování cookies, localStorage,
+Preferences a Local State přes dvě spuštění prohlížeče.
+[Publikace opravy](https://github.com/HSTEP/stelab-kiosk/actions/runs/39418628719)
+prošla a [GHCR obraz](https://github.com/HSTEP/stelab-kiosk/pkgs/container/stelab-kiosk-aarch64)
+je dostupný anonymně. Konkrétní Google/YouTube přihlášení je nutné po aktualizaci
+ověřit na zařízení. Na běžícím HA nebyla během přípravy aktualizace provedena změna.
 
-## Připravovaná oprava 0.1.0-rc.2
+## Oprava restartu v 0.1.0-rc.2
 
-Tato přípravná větev opravuje reset Preferences a mazání části dat webů při
+Verze opravuje reset Preferences a mazání části dat webů při
 startu. Profil zůstává v `/config/chromium-profile`, včetně Local State a cookies.
 Před vypnutím Xorgu dostane Chromium čas řádně ukončit a zapsat data.
 Kontrola portů zohledňuje TCP TIME_WAIT; skutečný druhý kiosk zůstává blokovaný.
@@ -92,15 +91,15 @@ přístup k datům i oprávněním doplňku. Nejde o samostatný Debian systém 
 
 Po schváleném vytvoření repozitáře `HSTEP/stelab-kiosk` otevři GitHub → Actions →
 **Check and build STELAB Kiosk** → Run workflow. Workflow kontroluje zdroje,
-testuje fullscreen a sestaví ARM64 obraz bez cache. **Nepublikuje nic do GHCR.**
+testuje fullscreen a sestaví ARM64 obraz bez cache na nativním ARM64 serveru a ověří restart skutečného Chromia. **Nepublikuje nic do GHCR.**
 Výsledek ukládá jako krátkodobý artifact. Nemůže ověřit skutečný HDMI displej/GPU.
 
 Alternativně lze sestavit lokálně s Docker Buildx:
 
 ```bash
 docker buildx build --platform linux/arm64 \
-  --build-arg BUILD_VERSION=0.1.0-rc.1 \
-  --tag stelab-kiosk:0.1.0-rc.1 --load ./stelab-kiosk
+  --build-arg BUILD_VERSION=0.1.0-rc.2 \
+  --tag stelab-kiosk:0.1.0-rc.2 --load ./stelab-kiosk
 ```
 
 Lokální kontroly nevyžadují Docker:
