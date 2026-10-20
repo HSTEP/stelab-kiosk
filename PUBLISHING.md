@@ -1,6 +1,7 @@
 # Publikování — až po výslovném svolení HSTEP
 
-Tento balíček je místní návrh. Jeho předání není publikace ani svolení ke změně HA.
+Zdrojový repozitář je veřejný a první testovací build prošel. Publikování obrazu
+v GHCR a změna HA vyžadují další svolení; dosud nebyly provedeny.
 
 1. Vytvořit veřejný GitHub repozitář `HSTEP/stelab-kiosk`, default branch `main`.
    Nahrát celý obsah tohoto repozitáře včetně `.github/workflows` a GPL licence.

@@ -3,8 +3,8 @@
 Experimentální Debian desktop pro Raspberry Pi 5 a HAOS: Chromium, Openbox,
 terminál xterm, správce souborů PCManFM a editor Mousepad.
 
-Zachovává základ dodané lokální kopie Welizard Browser. Sestavení a praktické
-ověření GPU, HDMI zvuku, dotyku a Bluetooth po změně na Debian teprve následují.
+Zachovává základ dodané lokální kopie Welizard Browser. První ARM64 sestavení
+prošlo. Praktické ověření GPU, HDMI zvuku, dotyku a Bluetooth ještě následuje.
 
 ⌘↓ zobrazí lištu Chromia, ⌘↑ ji skryje. ⌘Enter otevře terminál, ⌘E správce souborů,
 ⌘D se vrátí k prohlížeči. Skripty: /config/scripts, dokumenty: /config/files.

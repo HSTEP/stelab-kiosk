@@ -5,10 +5,12 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.1, připraveno k prvnímu sestavení a testu.** Kontroly zdrojů a
-sedm testů rozhodování fullscreen prošly. Docker ani Raspberry Pi nejsou v tomto
-prostředí dostupné: sestavení, V3D, HDMI zvuk, touch a Bluetooth po přechodu na
-Debian zůstávají neověřené. Nic zatím nebylo publikováno nebo spuštěno v HA.
+**Stav: 0.1.0-rc.1, první ARM64 sestavení úspěšné.** Zdrojové kontroly a sedm
+testů fullscreen prošly také na GitHubu. [První build](https://github.com/HSTEP/stelab-kiosk/actions/runs/39407259124)
+sestavil Chromium 155.0.8059.79 na Debianu 13 a ověřil přítomnost knihovny V3D.
+Zdrojové soubory jsou veřejné; obraz dosud není publikovaný v GHCR.
+Hardware Raspberry Pi 5 — skutečná akcelerace, HDMI zvuk, touch a Bluetooth —
+zatím otestovaný není. Na Home Assistantu nebyla provedena žádná změna.
 
 ## Co je připraveno
 
