@@ -1,0 +1,19 @@
+{
+  "CHANGELOG.md": "5796e240223507a6732bd4ec607b7de27568e185c789a00640e37842216dc7b1",
+  "Dockerfile": "87ea4d10ce717e8eae1276fcee4d92856b972b96058bd25b67ed7cb9256f23f0",
+  "README.md": "799215b86ef6aa8ce775180d34f9300929c3a91ebb6c0b066b908b2ad66ff86f",
+  "browser_ctl.py": "d0c3187294b3dc1bc19f2ca2f316861a2a1bff8a9d013b437cc497e397c4ff2f",
+  "chromium_watchdog.py": "388616bf2c7c23c9c544dcd26ed0531699ec1b89620db4ccbbcb37ef588e8730",
+  "config.yaml": "a120f01dcb8470372e28ea4639d9dff56e9e3dca7d9956a5f3b0093ac5ed60d9",
+  "examples/screensaver.sh": "30f3d4f4b947a6589a58c7c4de2197a1cfd293d2862af3d727086fce8d181a45",
+  "examples/ultrasonic-trigger.py": "bde53c3d20f9c42b80bc0d400dfe8c4c333448e20a81ffb1d42c64a248006a2c",
+  "gesture_commands.json": "4764fdec2c31e42d97b1b14c9695c774061cbad32d9c87b742ede8ca71ce47be",
+  "kiosk-ui.sh": "32d86dcc9190cd11016b8d00190995efe26ec128a39e78f2c074f72aa66affaa",
+  "mouse_touch_inputs.py": "deeb17d86d34b41ec6d3b29850b009c8021c1f45ac6600b43f1147ef29a02177",
+  "rest_server.py": "13b0bd9e5b5d44ccfcb010ff07d1d95f38815f383f4237eb1fac5dcea78aa580",
+  "run.sh": "3b85291d7f742d21216588d07686820bc4ae1f2fbbc0d34d7247e7bb2490f9bb",
+  "translations/en.yaml": "d9fc13571fda470cb810e62b415fd08097a709f73548d3f0a668f91547933852",
+  "unique_instance.patch": "26d19c0479ad4ecb3ea8ee24fb5b9c0e4bbd9e1dff903433b94da5ecbbfa137e",
+  "userconf.lua": "4a85a731f7cc26da5897179eb5509a098e8ac1aea67216bd64eb7fe394a3e83c",
+  "xorg.conf.default": "eb2bc1fedc3b7f1ba356eaa0d52aa989d85947c3ee1b47ed9745c8fb220334f0"
+}

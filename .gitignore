@@ -1,0 +1,5 @@
+.DS_Store
+.env
+options.json
+*.tar.gz
+__pycache__/
