@@ -25,11 +25,12 @@ COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
 COPY browser_profile.py startup_ports.py /
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
+COPY s6-run.sh /etc/services.d/stelab/run
 COPY kiosk-ui.sh /usr/local/bin/kiosk-ui
 COPY stelab-browser.sh /usr/local/bin/stelab-browser
 COPY stelab-desktop.sh /usr/local/bin/stelab-desktop
 COPY openbox-menu.xml /etc/xdg/openbox/stelab-menu.xml
-RUN chmod 755 /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop \
+RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop \
     && test -x /usr/lib/xorg/Xorg \
     && command -v bashio && command -v xprop && command -v xterm \
     && command -v pcmanfm && command -v mousepad && command -v onboard \
@@ -42,4 +43,4 @@ LABEL io.hass.name="STELAB Kiosk" \
       io.hass.type="addon" io.hass.arch="aarch64" \
       io.hass.version="${BUILD_VERSION}" \
       org.opencontainers.image.source="https://github.com/HSTEP/stelab-kiosk"
-CMD ["/run.sh"]
+CMD []

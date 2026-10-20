@@ -2,11 +2,13 @@
 
 - Preserve existing Chromium Preferences, Local State, cookies, site storage,
   service workers and bookmarks. Initialize a new profile only once.
+- Run the kiosk as an S6 service so shutdown precedes the container-wide kill.
 - Request graceful Browser.close before stopping Xorg, with bounded SIGTERM
   fallback restricted to the current container's browser/profile/debug port.
 - Allow TCP TIME_WAIT after restart without bypassing a real port conflict.
 - Include the missing AT-SPI Python typelib for Onboard; remove the unused
   Debian menu reference. Existing graphics/input/audio settings are retained.
+- Build and test directly on a native ARM64 GitHub runner.
 - Test real persistent cookies and localStorage across two Chromium launches
   inside the built ARM64 image before an image is uploaded or published.
 
