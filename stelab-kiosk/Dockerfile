@@ -43,11 +43,12 @@ COPY kiosk-ui.sh /usr/local/bin/kiosk-ui
 COPY stelab-browser.sh /usr/local/bin/stelab-browser
 COPY stelab-desktop.sh /usr/local/bin/stelab-desktop
 COPY stelab-chatgpt.sh /usr/local/bin/stelab-chatgpt
+COPY stelab-ai-session.sh /usr/local/bin/stelab-ai-session
 COPY stelab-ai-browser.sh /usr/local/bin/stelab-ai-browser
 COPY stelab-ai-browser.desktop /usr/share/applications/stelab-ai-browser.desktop
 COPY stelab-ai-mimeapps.list /usr/share/stelab-ai-mimeapps.list
 COPY openbox-menu.xml /etc/xdg/openbox/stelab-menu.xml
-RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop /usr/local/bin/stelab-chatgpt /usr/local/bin/stelab-ai-browser \
+RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop /usr/local/bin/stelab-chatgpt /usr/local/bin/stelab-ai-session /usr/local/bin/stelab-ai-browser \
     && test -x /usr/lib/xorg/Xorg \
     && command -v bashio && command -v xprop && command -v xterm \
     && command -v pcmanfm && command -v mousepad && command -v onboard \

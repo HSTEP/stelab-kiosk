@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import signal
 import subprocess
+import tempfile
 import time
 
 
@@ -25,6 +26,16 @@ if __name__ == '__main__':
         wait_for(lambda: subprocess.run(['xdpyinfo'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0)
         subprocess.run(['/usr/local/bin/stelab-chatgpt', '--prepare'], check=True)
         home = Path('/config/chatgpt/home')
+        # The root preparation intentionally never descends into user paths.
+        assert home.parent.stat().st_uid == 0
+        assert home.parent.stat().st_mode & 0o022 == 0
+        with tempfile.TemporaryDirectory() as guard:
+            config_link = home/'.config'
+            config_link.symlink_to(guard, target_is_directory=True)
+            subprocess.run(['/usr/local/bin/stelab-chatgpt', '--prepare'], check=True)
+            assert Path(guard).stat().st_uid == 0, 'Root preparation followed a user-controlled symlink'
+            config_link.unlink()
+        subprocess.run(['runuser', '-u', 'stelab-ai', '--', 'mkdir', '-p', str(home/'projects')], check=True)
         marker = home/'projects/persistence-check.txt'
         marker.write_text('do not replace existing work')
         subprocess.run(['/usr/local/bin/stelab-chatgpt', '--prepare'], check=True)
