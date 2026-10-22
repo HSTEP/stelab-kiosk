@@ -364,6 +364,9 @@ if [ -z "$selected_card" ]; then
     exit 1
 fi
 
+# Allow late USB/udev/cgroup readiness before Xorg's first device probe.
+python3 /touch_inputs.py wait
+
 #### Start Xorg in the background
 rm -rf /tmp/.X*-lock  #Cleanup old versions
 
@@ -525,8 +528,15 @@ fi
 
 #### Configure screen timeout (Note: DPMS needs to be enabled/disabled *after* starting window manager)
 xset +dpms  #Turn on DPMS
-xset s "$SCREEN_TIMEOUT"
-xset dpms "$SCREEN_TIMEOUT" "$SCREEN_TIMEOUT" "$SCREEN_TIMEOUT"
+if [ "$SCREEN_TIMEOUT" -gt 0 ] && [ "$(bashio::config 'video_aware_screen_timeout')" != false ]; then
+    # The controller owns the timeout so a paused video cannot inhibit forever.
+    xset s off
+    xset dpms 0 0 0
+    python3 -u /stelab_display_idle.py &
+else
+    xset s "$SCREEN_TIMEOUT"
+    xset dpms "$SCREEN_TIMEOUT" "$SCREEN_TIMEOUT" "$SCREEN_TIMEOUT"
+fi
 if [ "$SCREEN_TIMEOUT" -eq 0 ]; then
     bashio::log.info "Screen timeout disabled..."
 else
@@ -571,18 +581,8 @@ for OUTPUT in "${OUTPUTS[@]}"; do
     fi
 done
 
-if [ "$MAP_TOUCH_INPUTS" = true ]; then  #Map touch devices to physical output
-    while IFS= read -r id; do  #Loop through all xinput devices
-        name=$(xinput list --name-only "$id" 2>/dev/null)
-        [[ "${name,,}" =~ (^|[^[:alnum:]_])(touch|touchscreen|stylus)([^[:alnum:]_]|$) ]] || continue  #Not touch-like input
-        xinput_line=$(xinput list "$id" 2>/dev/null)
-        [[ "$xinput_line" =~ \[(slave|master)[[:space:]]+keyboard[[:space:]]+\([0-9]+\)\] ]] && continue
-        props="$(xinput list-props "$id" 2>/dev/null)"
-        [[ "$props" = *"Coordinate Transformation Matrix"* ]] ||  continue  #No transformation matrix
-        xinput map-to-output "$id" "$OUTPUT_NAME" && RESULT="SUCCESS" || RESULT="FAILED"
-        bashio::log.info "Mapping: input device [$id|$name] -->  $OUTPUT_NAME [$RESULT]"
-
-    done < <(xinput list --id-only | sort -n)
+if [ "$MAP_TOUCH_INPUTS" = true ]; then
+    python3 -u /touch_inputs.py watch --output "$OUTPUT_NAME" &
 fi
 
 #### Set keyboard layout
