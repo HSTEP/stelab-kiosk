@@ -6,14 +6,14 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=0.1.0-rc.5
+ARG BUILD_VERSION=0.1.0-rc.6
 ARG CHATGPT_VERSION=26.1013.40934
 ARG CHATGPT_SHA256=9ab2cbbaf33cebeaa1e06eb5cab78128936f927a0d97bf00e40694e5f31c629b
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \
     S6_SERVICES_GRACETIME=25000 S6_KILL_GRACETIME=15000
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash jq curl ca-certificates util-linux bsdextrautils procps iproute2 patch scrot \
-    xserver-xorg-core xserver-xorg-input-libinput libinput-tools udev evtest \
+    xserver-xorg-core xserver-xorg-input-libinput libinput-tools udev evtest libxss1 \
     libgl1-mesa-dri libegl-mesa0 libgles2 libgl1 libdrm2 mesa-utils \
     xdotool wmctrl x11-utils xinput x11-xserver-utils x11-xkb-utils libxkbcommon0 \
     openbox xterm pcmanfm mousepad adwaita-icon-theme dbus-x11 dconf-cli libglib2.0-bin \
@@ -38,7 +38,7 @@ RUN curl -fSL --proto '=https' --tlsv1.2 --retry 3 \
 COPY --from=vtbuild /tmp/tty0_override.so /usr/lib/tty0_override.so
 COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
-COPY browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
+COPY stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run

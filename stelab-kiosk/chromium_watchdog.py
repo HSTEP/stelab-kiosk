@@ -15,8 +15,11 @@ import logging
 import os
 import re
 import time
+import sys
+from urllib.parse import urlsplit
 from typing import Any
 
+sys.path.insert(0, "/")  # Also support a persistent /config/scripts override.
 from browser_ctl import ChromiumController
 
 
@@ -28,8 +31,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 HA_URL = (os.getenv("HA_URL") or "http://localhost:8123").rstrip("/")
-HA_URL_BASE = re.match(r"^(https?://[%w%.%-]+(?::\d+)?)", HA_URL)
-HA_URL_BASE = HA_URL_BASE.group(1).rstrip("/") if HA_URL_BASE else HA_URL
+_ha_url_parts = urlsplit(HA_URL)
+HA_URL_BASE = f"{_ha_url_parts.scheme}://{_ha_url_parts.netloc}"
 HA_USERNAME = os.getenv("HA_USERNAME") or ""
 HA_PASSWORD = os.getenv("HA_PASSWORD") or ""
 LOGIN_DELAY_MS = int(float(os.getenv("LOGIN_DELAY") or "1") * 1000)
@@ -98,32 +101,43 @@ def build_auto_login_script() -> str:
 
 
 def build_settings_script(sidebar: str, theme: str) -> str:
-    """Return JS that applies HA localStorage settings."""
+    """Apply explicit kiosk settings without discarding the user's HA theme."""
     return f"""
 (() => {{
   try {{
     let changed = false;
-    localStorage.setItem('browser_mod-browser-id', 'haos_kiosk');
+    const parse = (raw) => {{
+      try {{ return JSON.parse(raw); }} catch (_) {{ return raw || ''; }}
+    }};
+    const canonical = (value) => {{
+      if (Array.isArray(value)) return value.map(canonical);
+      if (value && typeof value === 'object') {{
+        return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])]));
+      }}
+      return value;
+    }};
+    const equal = (left, right) => JSON.stringify(canonical(left)) === JSON.stringify(canonical(right));
+    if (localStorage.getItem('browser_mod-browser-id') !== 'haos_kiosk') {{
+      localStorage.setItem('browser_mod-browser-id', 'haos_kiosk');
+    }}
 
     const sidebar = {json.dumps(sidebar)};
     const currentSidebar = localStorage.getItem('dockedSidebar') || '';
-    if (sidebar !== currentSidebar) {{
-      if (sidebar) {{
-        localStorage.setItem('dockedSidebar', sidebar);
-      }} else {{
-        localStorage.removeItem('dockedSidebar');
-      }}
+    if (!equal(parse(sidebar), parse(currentSidebar))) {{
+      if (sidebar) localStorage.setItem('dockedSidebar', sidebar);
+      else localStorage.removeItem('dockedSidebar');
       changed = true;
     }}
 
-    const theme = {json.dumps(theme)};
-    const currentTheme = localStorage.getItem('selectedTheme') || '';
-    if (theme !== currentTheme) {{
-      if (theme) {{
-        localStorage.setItem('selectedTheme', theme);
-      }} else {{
-        localStorage.removeItem('selectedTheme');
-      }}
+    const desiredTheme = parse({json.dumps(theme)});
+    const currentTheme = parse(localStorage.getItem('selectedTheme') || '');
+    // Default kiosk settings only specify dark mode, not a replacement theme.
+    const nextTheme = desiredTheme && typeof desiredTheme === 'object' && !Array.isArray(desiredTheme)
+      ? Object.assign({{}}, currentTheme && typeof currentTheme === 'object' && !Array.isArray(currentTheme) ? currentTheme : {{}}, desiredTheme)
+      : desiredTheme;
+    if (!equal(nextTheme, currentTheme)) {{
+      if (nextTheme !== '') localStorage.setItem('selectedTheme', JSON.stringify(nextTheme));
+      else localStorage.removeItem('selectedTheme');
       changed = true;
     }}
 
@@ -159,7 +173,7 @@ def extract_evaluate_value(result: dict[str, Any]) -> Any:
 
 
 async def main() -> None:
-    """Start watchdog loop."""
+    """Start watchdog; initialize settings once, never again on SPA route changes."""
     controller = ChromiumController()
     sidebar = normalize_sidebar(RAW_SIDEBAR)
     theme = normalize_theme(RAW_THEME, DARK_MODE)
@@ -177,7 +191,7 @@ async def main() -> None:
 
     last_url = ""
     last_auth_url = ""
-    last_settings_url = ""
+    settings_applied = False
     last_reload_at = time.monotonic()
     reload_count = 0
 
@@ -194,7 +208,7 @@ async def main() -> None:
                 last_auth_url = url
                 logger.info("Triggered HA auto-login for %s", url)
 
-            if url and is_ha_page(url) and not is_auth_page(url) and url != last_settings_url:
+            if url and is_ha_page(url) and not is_auth_page(url) and not settings_applied:
                 result = extract_evaluate_value(await controller.evaluate(settings_script))
                 if isinstance(result, dict) and result.get("ok"):
                     logger.info(
@@ -203,13 +217,13 @@ async def main() -> None:
                         result.get("theme"),
                         result.get("changed"),
                     )
+                    settings_applied = True
                     if result.get("changed"):
                         await controller.reload(ignore_cache=False)
                         last_reload_at = time.monotonic()
-                        logger.info("Reloaded page to apply updated HA localStorage")
+                        logger.info("Applied initial kiosk settings with one startup reload")
                 else:
                     logger.warning("Failed to apply HA settings: %s", result)
-                last_settings_url = url
 
             if BROWSER_REFRESH > 0 and url and url != "about:blank":
                 now = time.monotonic()

@@ -38,6 +38,9 @@ configuration:
     items:
       chromium: "Chromium"
       luakit: "Luakit"
+  video_aware_screen_timeout:
+    name: "Keep display awake during video"
+    description: "When screen_timeout is positive, use input inactivity and visible playing HTML video. Pause/stop starts a fresh timeout; manual off takes priority. Default: enabled."
   screen_timeout:
     name: "Screen Timeout"
     description: "Time in seconds until screen blanks; 0 for never [Default: 0]"

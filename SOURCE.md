@@ -30,3 +30,8 @@ Vendor package contents and included copyright/license notices are preserved;
 the application is a separate component, not relicensed as kiosk source.
 Source URL: https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_26.1013.40934_arm64.deb
 Setup documentation: https://learn.chatgpt.com/docs/linux/linux-app
+
+## 0.1.0-rc.6
+Image-owned idle/video controller, touchscreen startup readiness and hotplug mapping,
+and the HA navigation/theme reload correction developed against the running Pi 5.
+Original imported hashes above remain provenance, not current-file checksums.

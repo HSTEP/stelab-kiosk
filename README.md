@@ -5,12 +5,9 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.5 — Chromium pod samostatným uživatelem se zapnutým sandboxem.**
-[ARM64 testovací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39463303726)
-a [vydávací sestavení](https://github.com/HSTEP/stelab-kiosk/actions/runs/39446283466)
-prošla. Před publikací bylo ověřeno zachování profilu Chromia, skutečné VNC
-spojení a pohyb myši i otevření oficiálního ChatGPT okna pod běžným uživatelem
-bez HA tajemství v jeho prostředí. Obraz je anonymně dostupný z GHCR.
+**Stav: 0.1.0-rc.6 — připravená aktualizace uspávání a dotyku.**
+Nová verze zahrnuje hlídání přehrávaného videa, stabilní navigaci HA a čekání
+na dotykové zařízení před startem Xorg. Fyzický první start musí potvrdit test na Pi.
 
 Průchod přes skutečný HA Ingress / Cloudflare a přihlášení ChatGPT s následným
 restartem je ještě nutné ověřit na zařízení. Příprava vydání neměnila běžící HA.
@@ -288,3 +285,17 @@ Zdrojový původ a licence: [SOURCE.md](SOURCE.md), [LICENSE](LICENSE).
 - [Chromium pro Debian Trixie včetně ARM64](https://packages.debian.org/trixie/chromium)
 - [Konfigurace doplňků HA](https://contributors.home-assistant.io/apps/reference/configuration/)
 - [Welizard upstream](https://github.com/WeLizard/HAOS-kiosk)
+
+## Uspávání a dotyk od rc.6
+
+Pro zhasnutí po dvou minutách nastav `screen_timeout: 120` a
+`video_aware_screen_timeout: true`. Nula stále znamená nevypínat displej.
+Viditelné přehrávané HTML video blokuje uspání; po pauze běží nový interval.
+Ruční vypnutí má přednost. Skript se spouští z obrazu doplňku, takže jeho
+spuštění přežije aktualizaci; staré místní skripty v `/config/scripts` nejsou potřeba.
+
+Před Xorg se nejvýše 20 sekund čeká na dostupná dotyková zařízení a jejich
+oprávnění; po startu se připojené dotykové obrazovky opakovaně mapují na zvolený
+výstup. Nerozhoduje název výrobce, ale schopnost přímého dotyku. Pokud oprávnění
+Supervisoru nepřijdou, log vypíše nedostupné zařízení; doplněk si nepřidává plný
+přístup k hardwaru. Tato ochrana řeší závody při startu, nikoliv vadný USB kabel.

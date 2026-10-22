@@ -1,3 +1,13 @@
+# 0.1.0-rc.6
+
+- Ship video-aware display idle control in the image: configurable screen_timeout,
+  visible advancing HTML video detection, pause/stop grace period and manual-off priority.
+- Wait for touchscreen evdev readiness before Xorg probes devices, and retry mapping
+  late/reconnected direct-touch devices by capabilities rather than product names.
+- Keep hardware permissions unchanged; report unreadable evdev nodes instead of
+  requesting full device access. Physical cold-start acceptance is still required.
+- Preserve HA navigation/theme settings without repeated reloads on route changes.
+
 # 0.1.0-rc.5
 
 - Run kiosk Chromium as dedicated UID1001 with its native sandbox enabled.
