@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Install gateway test dependency
-        run: python -m pip install aiohttp
+        run: python -m pip install aiohttp python-xlib
       - name: Validate source and fullscreen behavior
         run: |
           python scripts/validate.py

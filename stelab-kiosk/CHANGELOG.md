@@ -1,3 +1,11 @@
+# 0.1.0-rc.8
+
+- Fix high CPU caused by repeated Openbox stacking notifications and taskbar raises.
+- Ignore unchanged window properties and never raise an already-topmost taskbar.
+- Wait for full window-manager release and recover if the taskbar is re-managed
+  or recreated after display/startup changes.
+- Retain the rc.7 timezone fix, background ChatGPT, profiles and autohiding taskbar.
+
 # 0.1.0-rc.7
 
 - Preserve Supervisor's TZ in the isolated ChatGPT and Chromium environments,

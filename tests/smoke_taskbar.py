@@ -2,7 +2,7 @@
 import os
 import subprocess
 import time
-from Xlib import display
+from Xlib import X, display
 
 
 def wait_for(check, message, seconds=15):
@@ -41,6 +41,7 @@ def main():
         dashboard = wait_for(lambda: window('Dashboard taskbar test'),'dashboard fixture')
         subprocess.run(['wmctrl','-i','-r',hex(int(dashboard)),'-b','add,fullscreen'],check=True)
         processes.append(subprocess.Popen(['python3','/desktop_session.py','panel']))
+        helper = processes[-1]
         panel = wait_for(lambda: window('STELAB Taskbar'),'taskbar window')
         d = display.Display()
         def visible_height():
@@ -64,6 +65,36 @@ def main():
         assert d.screen().root.query_pointer().child.id == int(panel)
         subprocess.run(['xdotool','mousemove','500','300'],check=True)
         wait_for(lambda: visible_height() <= 4,'taskbar did not hide again')
+        # Reproduce the production startup condition: desktop, OSK, and a dock
+        # that is taken back by Openbox after its initial overlay setup.
+        processes.append(subprocess.Popen(['python3','/desktop_session.py','run']))
+        processes.append(subprocess.Popen(['dbus-run-session','--','onboard'],
+                                          stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL))
+        time.sleep(1)
+        panel_window = d.create_resource_object('window',int(panel))
+        panel_window.unmap(); d.sync()
+        panel_window.change_attributes(override_redirect=False)
+        panel_window.map(); d.sync()
+        wait_for(lambda: panel_window.get_attributes().override_redirect
+                 and panel_window.query_tree().parent.id == d.screen().root.id,
+                 'taskbar did not recover from window-manager takeover')
+        time.sleep(1)
+        # Repeated notifications with identical data must not feed back into
+        # XConfigureWindow -> Openbox -> property notification -> XConfigureWindow.
+        root = d.screen().root
+        atom = d.intern_atom('_NET_CLIENT_LIST_STACKING')
+        current = root.get_full_property(atom,X.AnyPropertyType)
+        for _ in range(100):
+            root.change_property(atom,d.intern_atom('WINDOW'),32,current.value)
+        d.sync()
+        def cpu_seconds():
+            with open(f'/proc/{helper.pid}/stat') as f:
+                fields=f.read().rsplit(')',1)[1].split()
+            return (int(fields[11])+int(fields[12]))/os.sysconf('SC_CLK_TCK')
+        before=cpu_seconds(); time.sleep(4); used=cpu_seconds()-before
+        assert used < .25, f'Taskbar event loop used {used:.2f} CPU seconds during 4 seconds idle'
+        assert helper.poll() is None
+        print(f'PASS: desktop/OSK takeover recovery, repeated stack notifications, helper CPU {used:.2f}s / 4s')
         print('PASS: taskbar hidden edge, reveal above fullscreen, click restores minimized app, automatic rehide')
     finally:
         if d: d.close()

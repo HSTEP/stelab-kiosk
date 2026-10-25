@@ -5,7 +5,11 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.7 — časové pásmo, ChatGPT na pozadí a nové balíčky.**
+**Stav: 0.1.0-rc.8 — oprava vysoké zátěže spodní lišty.**
+Opravuje smyčku oznámení správce oken v rc.7, která mohla vytěžovat procesor.
+Lišta ignoruje nezměněné pořadí oken, zbytečně se nepřesouvá a umí obnovit
+svou vrstvu po změnách displeje při startu.
+
 Aplikace i prohlížeč přebírají časové pásmo Supervisoru (např. Europe/Prague),
 včetně změn letního/zimního času. Systémové hodiny se neposouvají.
 ChatGPT se při startu doplňku otevře a minimalizuje; nastavený HA dashboard běží

@@ -6,7 +6,7 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=0.1.0-rc.7
+ARG BUILD_VERSION=0.1.0-rc.8
 ARG CHATGPT_VERSION=26.1021.22027
 ARG CHATGPT_SHA256=68de1ec44066871e4177ba1ca793ebee6ba238397f13c794e45b14941c1261fb
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \

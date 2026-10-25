@@ -32,14 +32,40 @@ def make_overlay(d, root, panel):
     atom = d.intern_atom('_NET_CLIENT_LIST')
     while time.monotonic() < deadline:
         clients = root.get_full_property(atom, X.AnyPropertyType)
-        if clients is None or panel.id not in clients.value:
+        if ((clients is None or panel.id not in clients.value)
+                and panel.query_tree().parent.id == root.id):
             break
         time.sleep(.02)
+    if panel.query_tree().parent.id != root.id:
+        raise RuntimeError('Window manager did not release taskbar')
     panel.change_attributes(override_redirect=True)
     panel.reparent(root, position.x, position.y)
     panel.map()
     panel.configure(stack_mode=X.Above)
     d.sync()
+
+
+def property_changed(root, atom, snapshots):
+    """Openbox can announce an unchanged stack in response to a raise."""
+    value = root.get_full_property(atom, X.AnyPropertyType)
+    value = tuple(value.value) if value is not None else None
+    changed = atom not in snapshots or snapshots[atom] != value
+    snapshots[atom] = value
+    return changed
+
+
+def raise_if_covered(root, panel):
+    # Raising an already-top window can itself provoke another WM notification.
+    for window in reversed(root.query_tree().children):
+        try:
+            if window.get_attributes().map_state == X.IsViewable:
+                if window.id != panel.id:
+                    panel.configure(stack_mode=X.Above)
+                    return True
+                return False
+        except error.BadWindow:
+            continue
+    return False
 
 
 def main():
@@ -66,8 +92,11 @@ def main():
         if panel is None:
             raise RuntimeError('Taskbar window did not appear')
         make_overlay(d, root, panel)
+        snapshots = {}
         watched = {d.intern_atom(name) for name in (
-            '_NET_ACTIVE_WINDOW', '_NET_CLIENT_LIST_STACKING', '_NET_CURRENT_DESKTOP')}
+            '_NET_ACTIVE_WINDOW', '_NET_CLIENT_LIST_STACKING', '_NET_CURRENT_DESKTOP', '_NET_CLIENT_LIST')}
+        for atom in watched:
+            property_changed(root, atom, snapshots)
         try:
             pidfd = os.pidfd_open(app.pid)
         except (AttributeError, OSError):
@@ -79,14 +108,27 @@ def main():
             if not d.pending_events():
                 select.select([d.fileno()] + ([pidfd] if pidfd is not None else []),
                               [], [], None if pidfd is not None else 5)
-            raise_panel = False
+            changed_atoms = set()
             while d.pending_events():
                 event = d.next_event()
                 if event.type == X.PropertyNotify and event.atom in watched:
-                    raise_panel = True
-            if raise_panel:
-                panel.configure(stack_mode=X.Above)
-                d.flush()
+                    changed_atoms.add(event.atom)
+            if changed_atoms:
+                # Startup/output changes can re-manage or recreate tint2's
+                # window. Repair the boundary once, rather than fighting WM.
+                try:
+                    unmanaged = panel.get_attributes().override_redirect
+                except error.BadWindow:
+                    panel = find_panel(d, root, app.pid)
+                    unmanaged = False
+                if panel is None:
+                    continue
+                if not unmanaged:
+                    make_overlay(d, root, panel)
+                changed = [property_changed(root, atom, snapshots) for atom in changed_atoms]
+                if any(changed):
+                    raise_if_covered(root, panel)
+                    d.flush()
     finally:
         if pidfd is not None:
             os.close(pidfd)
