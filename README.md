@@ -10,6 +10,11 @@ Aplikace i prohlížeč přebírají časové pásmo Supervisoru (např. Europe/
 včetně změn letního/zimního času. Systémové hodiny se neposouvají.
 ChatGPT se při startu doplňku otevře a minimalizuje; nastavený HA dashboard běží
 vpředu v celoobrazovkovém režimu. Zkratka Command+G aplikaci znovu zobrazí.
+U spodního okraje je automaticky schovávaná lišta se spuštěnými i minimalizovanými
+aplikacemi a ikonami Dashboard / ChatGPT / Web. Najeďte myší nebo klepněte na
+spodní proužek (4 px); lišta vyjede, po opuštění se za chvíli schová. Klepnutí
+na aplikaci ji obnoví nebo minimalizuje. Bez rozmazávání a dalších monitorů.
+Nastavení lišty zůstává v `/config/desktop/tint2rc` a aktualizace je nepřepisuje.
 Volba `chatgpt_autostart` je výchozí zapnutá; vypnutí ponechá ruční spouštění.
 ChatGPT je aktualizované na 26.1021.22027, Chromium a systémové knihovny se
 při novém sestavení aktualizují z Debian Trixie a jeho security repozitářů.

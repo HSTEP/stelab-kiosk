@@ -68,11 +68,16 @@ Icon={icon}
 Terminal=false
 StartupNotify=false
 ''', 0o700)
+    applications = home / '.local/share/applications'
+    applications.mkdir(parents=True, exist_ok=True)
+    for slug, short in [('01-dashboard', 'dashboard'), ('02-web', 'web'), ('03-chatgpt', 'chatgpt')]:
+        seed(applications / f'stelab-{short}.desktop', (desktop / f'{slug}.desktop').read_text(), 0o700)
+    seed(STATE / 'tint2rc', (ASSETS / 'tint2rc').read_text())
     return home
 
 def main():
-    if len(sys.argv) != 2 or sys.argv[1] not in ('prepare', 'run'):
-        raise SystemExit('Usage: desktop_session.py prepare|run')
+    if len(sys.argv) != 2 or sys.argv[1] not in ('prepare', 'run', 'panel'):
+        raise SystemExit('Usage: desktop_session.py prepare|run|panel')
     home = prepare()
     if sys.argv[1] == 'prepare':
         return
@@ -83,6 +88,8 @@ def main():
     env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / '.config'),
                XDG_CACHE_HOME=str(home / '.cache'),
                XDG_DATA_HOME=str(home / '.local/share'), LANG='C.UTF-8')
+    if sys.argv[1] == 'panel':
+        os.execvpe('tint2', ['tint2', '-c', str(STATE / 'tint2rc')], env)
     os.execvpe('dbus-run-session', ['dbus-run-session', '--', 'pcmanfm',
                                  '--desktop', '--profile=stelab'], env)
 

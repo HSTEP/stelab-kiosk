@@ -53,6 +53,10 @@ if __name__ == '__main__':
         environment = dict(os.environ, SUPERVISOR_TOKEN='test-secret-not-real', HA_PASSWORD='test-secret-not-real')
         environment['TZ'] = 'Europe/Prague'
         os.environ.update(environment)
+        subprocess.run(['python3','/timezone_config.py'],check=True)
+        for instant, offset in [('2026-10-25T12:00:00Z','+0100'), ('2026-07-01T12:00:00Z','+0200')]:
+            actual = subprocess.check_output(['env','-u','TZ','date','--date='+instant,'+%z'],text=True).strip()
+            assert actual == offset, (instant, actual)
         spec = importlib.util.spec_from_file_location('autostart', '/chatgpt_autostart.py')
         autostart = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(autostart)
@@ -94,7 +98,7 @@ for directory in Path('/proc').iterdir():
         uid = next(line for line in (directory/'status').read_text().splitlines() if line.startswith('Uid:')).split()[1]
         records.append({'uid': uid, 'no_sandbox': b'--no-sandbox' in argv,
                         'has_secrets': b'SUPERVISOR_TOKEN=' in env or b'HA_PASSWORD=' in env,
-                        'has_timezone': b'TZ=Europe/Prague\0' in env})
+                        'timezone': next((v.decode() for v in env.split(b'\0') if v.startswith(b'TZ=')), '(system localtime)')})
     except (FileNotFoundError, PermissionError):
         continue
 print(json.dumps(records))
@@ -102,8 +106,9 @@ print(json.dumps(records))
         processes = json.loads(subprocess.check_output(
             ['runuser', '-u', 'stelab-ai', '--', 'python3', '-c', inspect], text=True))
         assert processes, 'No official ChatGPT process found via /proc/exe'
-        assert all(p['uid'] == '1000' and not p['has_secrets'] and not p['no_sandbox'] and p['has_timezone'] for p in processes), processes
-        print('PASS: official ChatGPT window, non-root UID, clean environment, persistent home, sandbox not disabled')
+        assert all(p['uid'] == '1000' and not p['has_secrets'] and not p['no_sandbox'] for p in processes), processes
+        print('App timezone source:', sorted({p['timezone'] for p in processes}))
+        print('PASS: winter/summer localtime, minimized/restore behavior, official ChatGPT window, non-root UID, clean environment, persistent home, sandbox not disabled')
     finally:
         if app and app.poll() is None:
             os.killpg(app.pid, signal.SIGTERM)

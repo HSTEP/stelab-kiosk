@@ -57,6 +57,7 @@
 #       [If not in DEBUG_MODE; Otherwise, just sleep]
 #
 ################################################################################
+python3 /timezone_config.py
 echo "."  # Almost blank line (Note totally blank or white space lines are swallowed)
 printf '%*s\n' 80 '' | tr ' ' '#'  # Separator
 bashio::log.info "######## Starting STELAB Kiosk ########"
@@ -525,6 +526,10 @@ sleep 0.5
 if ! kill -0 "$DESKTOP_PID" 2>/dev/null; then
     bashio::log.warning "Desktop manager failed; kiosk remains available"
 fi
+
+# A lightweight taskbar exposes minimized apps; its hidden edge works over fullscreen.
+python3 /desktop_session.py panel &
+PANEL_PID=$!
 
 #### Configure screen timeout (Note: DPMS needs to be enabled/disabled *after* starting window manager)
 xset +dpms  #Turn on DPMS

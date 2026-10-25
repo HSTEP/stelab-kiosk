@@ -2,6 +2,10 @@
 
 - Preserve Supervisor's TZ in the isolated ChatGPT and Chromium environments,
   including child tools. No system clock changes; DST follows the HA timezone.
+- Configure container /etc/localtime from Supervisor TZ for apps that discard TZ;
+  never adjust the host clock.
+- Add a lightweight autohiding bottom taskbar with minimized apps, fixed launchers
+  and a local clock; retain its user configuration across updates.
 - Start ChatGPT once per add-on boot and minimize its initial window, leaving
   the configured fullscreen HA dashboard in front. Optional chatgpt_autostart
   defaults to true; browser restarts do not relaunch the AI app.

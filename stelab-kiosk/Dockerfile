@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xserver-xorg-core xserver-xorg-input-libinput libinput-tools udev evtest libxss1 \
     libgl1-mesa-dri libegl-mesa0 libgles2 libgl1 libdrm2 mesa-utils \
     xdotool wmctrl x11-utils xinput x11-xserver-utils x11-xkb-utils libxkbcommon0 \
-    openbox xterm pcmanfm mousepad adwaita-icon-theme dbus-x11 dconf-cli libglib2.0-bin \
+    openbox tint2 xterm pcmanfm mousepad adwaita-icon-theme dbus-x11 dconf-cli libglib2.0-bin \
     gsettings-desktop-schemas onboard at-spi2-core gir1.2-atspi-2.0 \
     unclutter-xfixes fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji \
     chromium chromium-sandbox pulseaudio-utils libasound2-plugins \
@@ -38,7 +38,7 @@ RUN curl -fSL --proto '=https' --tlsv1.2 --retry 3 \
 COPY --from=vtbuild /tmp/tty0_override.so /usr/lib/tty0_override.so
 COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
-COPY chatgpt_autostart.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
+COPY timezone_config.py chatgpt_autostart.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run

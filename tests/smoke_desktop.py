@@ -39,7 +39,9 @@ def main():
         for p in credentials:
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_bytes(b'opaque persistent auth sentinel\x00')
-        before = {p: p.read_bytes() for p in [custom, state / 'wallpaper.png', *credentials]}
+        taskbar = state / 'tint2rc'
+        taskbar.write_text(taskbar.read_text() + '\n# user taskbar customization\n')
+        before = {p: p.read_bytes() for p in [custom, taskbar, state / 'wallpaper.png', *credentials]}
         subprocess.run(['python3', '/desktop_session.py', 'prepare'], check=True)
         assert all(p.read_bytes() == data for p, data in before.items())
         desktop = subprocess.Popen(['python3', '/desktop_session.py', 'run'])
