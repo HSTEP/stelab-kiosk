@@ -27,7 +27,7 @@ if __name__ == '__main__':
     try:
         wait_for(lambda: subprocess.run(['xdpyinfo'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0)
         wm = subprocess.Popen(['openbox'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        wait_for(lambda: '_NET_SUPPORTING_WM_CHECK' in subprocess.check_output(
+        wait_for(lambda: 'window id #' in subprocess.check_output(
             ['xprop','-root','_NET_SUPPORTING_WM_CHECK'], text=True))
         # Simulate a dashboard which is already visible when the AI app maps.
         dashboard = subprocess.Popen(['xterm','-class','chromium','-title','STELAB Dashboard'])
@@ -68,8 +68,9 @@ if __name__ == '__main__':
         window = wait_for(window_ready, timeout=60).splitlines()[-1]
         wait_for(lambda: '_NET_WM_STATE_HIDDEN' in subprocess.check_output(
             ['xprop','-id',window,'_NET_WM_STATE'], text=True))
-        active = subprocess.check_output(['xdotool','getactivewindow','getwindowclassname'],text=True).strip()
-        assert active.lower() == 'chromium', active
+        active = subprocess.check_output(['xdotool','getactivewindow'],text=True).strip()
+        active_class = subprocess.check_output(['xprop','-id',active,'WM_CLASS'],text=True)
+        assert 'chromium' in active_class.lower(), active_class
         # Normal activation must restore the app; no permanent below-window rule.
         subprocess.run(['xdotool','windowmap',window,'windowactivate','--sync',window],check=True)
         wait_for(lambda: '_NET_WM_STATE_HIDDEN' not in subprocess.check_output(
