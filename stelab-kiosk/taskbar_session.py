@@ -6,6 +6,7 @@ import signal
 import subprocess
 import time
 from Xlib import X, display, error
+from Xlib.protocol import event
 
 
 def find_panel(d, root, pid):
@@ -25,21 +26,23 @@ def find_panel(d, root, pid):
 
 def make_overlay(d, root, panel):
     position = root.translate_coords(panel, 0, 0)
+    # Mark it unmanaged before unmap/reparent, so an autohide remap cannot
+    # race Openbox into managing it again. Reparent + synthetic withdrawal is
+    # the ICCCM handshake, including when the panel was already unmapped.
+    panel.change_attributes(override_redirect=True)
     panel.unmap()
+    panel.reparent(root, position.x, position.y)
+    root.send_event(event.UnmapNotify(event=root, window=panel,
+                                     from_configure=False),
+                    event_mask=X.SubstructureRedirectMask | X.SubstructureNotifyMask)
     d.sync()
-    # Give Openbox its UnmapNotify before remapping as an unmanaged dock.
     deadline = time.monotonic() + 2
     atom = d.intern_atom('_NET_CLIENT_LIST')
     while time.monotonic() < deadline:
         clients = root.get_full_property(atom, X.AnyPropertyType)
-        if ((clients is None or panel.id not in clients.value)
-                and panel.query_tree().parent.id == root.id):
+        if clients is None or panel.id not in clients.value:
             break
         time.sleep(.02)
-    if panel.query_tree().parent.id != root.id:
-        raise RuntimeError('Window manager did not release taskbar')
-    panel.change_attributes(override_redirect=True)
-    panel.reparent(root, position.x, position.y)
     panel.map()
     panel.configure(stack_mode=X.Above)
     d.sync()
@@ -116,6 +119,10 @@ def main():
             if changed_atoms:
                 # Startup/output changes can re-manage or recreate tint2's
                 # window. Repair the boundary once, rather than fighting WM.
+                if panel is None:
+                    panel = find_panel(d, root, app.pid)
+                    if panel is None:
+                        continue
                 try:
                     unmanaged = panel.get_attributes().override_redirect
                 except error.BadWindow:
