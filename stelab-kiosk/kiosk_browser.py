@@ -25,6 +25,7 @@ def checked_directory(path):
 def environment():
     env = {'HOME': str(HOME), 'USER': USER, 'LOGNAME': USER,
            'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8',
+           'TZ': os.environ.get('TZ') or 'Etc/UTC',
            'DISPLAY': os.environ.get('DISPLAY', ':0'),
            'XDG_RUNTIME_DIR': str(RUNTIME),
            'XDG_CONFIG_HOME': str(HOME / '.config'),

@@ -1,3 +1,15 @@
+# 0.1.0-rc.7
+
+- Preserve Supervisor's TZ in the isolated ChatGPT and Chromium environments,
+  including child tools. No system clock changes; DST follows the HA timezone.
+- Start ChatGPT once per add-on boot and minimize its initial window, leaving
+  the configured fullscreen HA dashboard in front. Optional chatgpt_autostart
+  defaults to true; browser restarts do not relaunch the AI app.
+- Update the pinned official ARM64 ChatGPT package to 26.1021.22027, verified
+  against the signed OpenAI package index and SHA256 during image build.
+- Rebuild Chromium and Debian dependencies from current Trixie/security packages.
+- Preserve persistent profiles, user files, dashboard URL, GPU and sandbox settings.
+
 # 0.1.0-rc.6
 
 - Ship video-aware display idle control in the image: configurable screen_timeout,

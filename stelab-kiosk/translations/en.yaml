@@ -159,3 +159,6 @@ configuration:
   xorg_vt_mode:
     name: "Xorg VT mode"
     description: "preload: Welizard Debian compatibility library for Xorg only; native: direct VT access. Hardware test required."
+  chatgpt_autostart:
+    name: "Start ChatGPT at boot"
+    description: "Launch ChatGPT minimized once at add-on startup, keeping the configured dashboard in front. Enabled by default; restart after changing."

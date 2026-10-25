@@ -6,3 +6,6 @@ configuration:
   vnc_server:
     name: "Heslo původního VNC v místní síti"
     description: "Pro STELAB Remote ponechte prázdné. Neprázdná hodnota navíc zapne původní LAN VNC na portu 5900; pomlčka vypíná jeho heslo."
+  chatgpt_autostart:
+    name: "ChatGPT při spuštění"
+    description: "Spustí ChatGPT na pozadí při startu doplňku. Dashboard zůstane navrchu. Výchozí stav zapnuto; po změně restartujte doplněk."

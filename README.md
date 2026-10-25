@@ -5,12 +5,19 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.6 — připravená aktualizace uspávání a dotyku.**
-Nová verze zahrnuje hlídání přehrávaného videa, stabilní navigaci HA a čekání
-na dotykové zařízení před startem Xorg. Fyzický první start musí potvrdit test na Pi.
+**Stav: 0.1.0-rc.7 — časové pásmo, ChatGPT na pozadí a nové balíčky.**
+Aplikace i prohlížeč přebírají časové pásmo Supervisoru (např. Europe/Prague),
+včetně změn letního/zimního času. Systémové hodiny se neposouvají.
+ChatGPT se při startu doplňku otevře a minimalizuje; nastavený HA dashboard běží
+vpředu v celoobrazovkovém režimu. Zkratka Command+G aplikaci znovu zobrazí.
+Volba `chatgpt_autostart` je výchozí zapnutá; vypnutí ponechá ruční spouštění.
+ChatGPT je aktualizované na 26.1021.22027, Chromium a systémové knihovny se
+při novém sestavení aktualizují z Debian Trixie a jeho security repozitářů.
 
-Průchod přes skutečný HA Ingress / Cloudflare a přihlášení ChatGPT s následným
-restartem je ještě nutné ověřit na zařízení. Příprava vydání neměnila běžící HA.
+Pro start po výpadku zapněte v HA u doplňku **Spustit při startu**. Nastavení
+`ha_dashboard` určuje úvodní dashboard; aktualizace zachovává jeho existující
+hodnotu i profily/přihlášení. Při startu celého HAOS může načítání HA chvíli trvat.
+Fyzický dotyk, V3D a chování po výpadku je ještě třeba potvrdit na Raspberry Pi.
 
 ## Oprava restartu v 0.1.0-rc.2
 

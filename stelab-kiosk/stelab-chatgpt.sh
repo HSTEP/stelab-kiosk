@@ -29,5 +29,6 @@ exec runuser -u stelab-ai -- env -i \
     DISPLAY=:0 XDG_RUNTIME_DIR="$AI_RUNTIME" \
     XDG_CONFIG_HOME="$AI_HOME/.config" XDG_CACHE_HOME="$AI_HOME/.cache" \
     XDG_DATA_HOME="$AI_HOME/.local/share" \
+    TZ="${TZ:-Etc/UTC}" \
     LANG=C.UTF-8 BROWSER=/usr/local/bin/stelab-ai-browser \
     /usr/local/bin/stelab-ai-session

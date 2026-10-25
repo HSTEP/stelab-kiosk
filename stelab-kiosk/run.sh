@@ -772,6 +772,12 @@ if [ "$DEBUG_MODE" != true ]; then
         seed_chromium_preferences
     fi
 
+    # Start once per add-on boot, never in the browser reopen/watchdog path.
+    # The bounded helper minimizes the app even if it maps after Chromium.
+    if [ "$(bashio::config 'chatgpt_autostart')" != false ]; then
+        python3 -u /chatgpt_autostart.py &
+    fi
+
     BROWSER_STARTED=true
     /usr/local/bin/stelab-browser &
     bashio::log.info "Launching $BROWSER browser(PID=$!): $HA_URL/$HA_DASHBOARD"
