@@ -6,7 +6,7 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=0.1.0-rc.8
+ARG BUILD_VERSION=0.1.0-rc.9
 ARG CHATGPT_VERSION=26.1021.22027
 ARG CHATGPT_SHA256=68de1ec44066871e4177ba1ca793ebee6ba238397f13c794e45b14941c1261fb
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \
@@ -38,7 +38,7 @@ RUN curl -fSL --proto '=https' --tlsv1.2 --retry 3 \
 COPY --from=vtbuild /tmp/tty0_override.so /usr/lib/tty0_override.so
 COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
-COPY taskbar_session.py timezone_config.py chatgpt_autostart.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
+COPY browser_visibility.py taskbar_session.py timezone_config.py chatgpt_autostart.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run

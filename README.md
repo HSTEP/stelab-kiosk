@@ -5,7 +5,13 @@ Chromium s dashboardem, Openbox, terminál xterm, správce souborů PCManFM a ed
 Mousepad. Vychází ze zaslané funkční kopie Welizard Browser Custom
 `1.3.1-welizard.8-local1`, nikoliv z nahrazení runtime dnešním upstreamem.
 
-**Stav: 0.1.0-rc.8 — oprava vysoké zátěže spodní lišty.**
+**Stav: 0.1.0-rc.9 — oprava zátěže lišty a úsporné zhasínání.**
+Při vypnutém displeji se viditelná okna kioskového Chromia minimalizují, aby
+zbytečně nevykreslovala dashboard. Při probuzení se obnoví včetně původního
+zaměření aplikace. Ručně minimalizovaná okna a prohlížeče jiných uživatelů se
+nemění. Stránky se nezavírají ani neodhlašují; běžící video dál brání automatickému
+zhasnutí podle stávající logiky.
+
 Opravuje smyčku oznámení správce oken v rc.7, která mohla vytěžovat procesor.
 Lišta ignoruje nezměněné pořadí oken, zbytečně se nepřesouvá a umí obnovit
 svou vrstvu po změnách displeje při startu.

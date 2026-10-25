@@ -75,6 +75,11 @@ cleanup() {
     if [ "${SAVE_ONSCREEN_CONFIG:-false}" = true ] && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
         dconf dump /org/onboard/ > "$ONBOARD_CONFIG_FILE" || true
     fi
+    # Restore only windows hidden by the idle controller before saving profile.
+    if [ -n "${DISPLAY_IDLE_PID:-}" ] && kill -0 "$DISPLAY_IDLE_PID" 2>/dev/null; then
+        kill -TERM "$DISPLAY_IDLE_PID"
+        wait "$DISPLAY_IDLE_PID" || true
+    fi
     # Let Chromium flush Preferences and cookies while Xorg and session D-Bus live.
     if [ "${BROWSER_STARTED:-false}" = true ]; then
         python3 /browser_profile.py close --profile "$CHROMIUM_PROFILE_DIR" --port "$CHROMIUM_DEVTOOLS_PORT" || true
@@ -538,6 +543,7 @@ if [ "$SCREEN_TIMEOUT" -gt 0 ] && [ "$(bashio::config 'video_aware_screen_timeou
     xset s off
     xset dpms 0 0 0
     python3 -u /stelab_display_idle.py &
+    DISPLAY_IDLE_PID=$!
 else
     xset s "$SCREEN_TIMEOUT"
     xset dpms "$SCREEN_TIMEOUT" "$SCREEN_TIMEOUT" "$SCREEN_TIMEOUT"

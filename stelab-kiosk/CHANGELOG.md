@@ -1,3 +1,11 @@
+# 0.1.0-rc.9
+
+- Minimize only the kiosk user's visible Chromium windows while the display is
+  off, stopping unnecessary GPU rendering. Restore them and prior focus on wake.
+- Preserve manually minimized windows, other users' browsers and all page state.
+- Keep existing video-aware timeout and manual display-off priority.
+- Include the rc.8 taskbar CPU feedback-loop fix; no settings/profile reset.
+
 # 0.1.0-rc.8
 
 - Fix high CPU caused by repeated Openbox stacking notifications and taskbar raises.

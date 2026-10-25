@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Local 120s input idle timeout, with visible playing-video and manual-off support."""
 from __future__ import annotations
-import asyncio,ctypes,fcntl,json,logging,math,os,subprocess,sys,time
+import asyncio,ctypes,fcntl,json,logging,math,os,signal,subprocess,sys,time
 from pathlib import Path
 sys.path.insert(0,'/')
 from aiohttp import ClientSession,ClientTimeout
 from browser_ctl import ChromiumController,ChromiumPageSession
+from browser_visibility import BrowserWindowSaver
 LOG=logging.getLogger('display_idle')
 TIMEOUT=float(os.environ.get("SCREEN_TIMEOUT", "120"))
 POLL=2.0
@@ -97,22 +98,30 @@ async def main():
     lock=open('/run/stelab-display-idle.lock','w')
     try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     except BlockingIOError:return
-    screen=X11Screen();screen.configure();policy=IdlePolicy();video=VideoDetector();last_error=-math.inf;last_video=False
+    screen=X11Screen();screen.configure();windows=BrowserWindowSaver();policy=IdlePolicy();video=VideoDetector();last_error=-math.inf;last_video=False
+    loop=asyncio.get_running_loop();task=asyncio.current_task()
+    for signum in (signal.SIGTERM,signal.SIGINT):loop.add_signal_handler(signum,task.cancel)
     LOG.info('Started: %ss input idle timeout; playing-video exception; explicit off wins', TIMEOUT)
-    while True:
-        now=time.monotonic()
-        try:
-            idle,on=screen.sample()
-            try:playing=await video.sample(now)
-            except Exception:playing=False
-            if playing!=last_video:LOG.info('Visible video %s','playing' if playing else 'stopped/paused');last_video=playing
-            desired=policy.decide(now,idle,on,playing)
-            if desired!=on:
-                screen.set_on(desired);policy.commanded(desired)
-                LOG.info('Display %s (input idle %.1fs; video=%s)','on' if desired else 'off',idle,playing)
-        except Exception as e:
-            if now-last_error>=60:LOG.warning('Idle monitor error: %s',type(e).__name__);last_error=now
-        await asyncio.sleep(POLL)
+    try:
+        while True:
+            now=time.monotonic()
+            try:
+                idle,on=screen.sample()
+                windows.sync(on)
+                try:playing=await video.sample(now)
+                except Exception:playing=False
+                if playing!=last_video:LOG.info('Visible video %s','playing' if playing else 'stopped/paused');last_video=playing
+                desired=policy.decide(now,idle,on,playing)
+                if desired!=on:
+                    screen.set_on(desired);policy.commanded(desired)
+                    windows.sync(desired)
+                    LOG.info('Display %s (input idle %.1fs; video=%s)','on' if desired else 'off',idle,playing)
+            except Exception as e:
+                if now-last_error>=60:LOG.warning('Idle monitor error: %s',type(e).__name__);last_error=now
+            await asyncio.sleep(POLL)
+    finally:
+        windows.close()
 if __name__=='__main__':
     logging.basicConfig(level=logging.INFO,format='[%(asctime)s] %(levelname)s: [display_idle] %(message)s',datefmt='%H:%M:%S')
-    asyncio.run(main())
+    try:asyncio.run(main())
+    except (asyncio.CancelledError,KeyboardInterrupt):pass
