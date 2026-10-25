@@ -38,7 +38,7 @@ RUN curl -fSL --proto '=https' --tlsv1.2 --retry 3 \
 COPY --from=vtbuild /tmp/tty0_override.so /usr/lib/tty0_override.so
 COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
-COPY timezone_config.py chatgpt_autostart.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
+COPY taskbar_session.py timezone_config.py chatgpt_autostart.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run

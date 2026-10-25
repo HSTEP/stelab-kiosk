@@ -57,6 +57,13 @@ def main():
                  'Click did not restore minimized app')
         subprocess.run(['xdotool','mousemove','500','300'],check=True)
         wait_for(lambda: visible_height() <= 4,'taskbar did not hide after switching')
+        # Refocusing the fullscreen window must not bury the hidden edge again.
+        subprocess.run(['xdotool','windowactivate','--sync',dashboard],check=True)
+        subprocess.run(['xdotool','mousemove','180','767'],check=True)
+        wait_for(lambda: visible_height() >= 40,'taskbar lost after fullscreen refocus')
+        assert d.screen().root.query_pointer().child.id == int(panel)
+        subprocess.run(['xdotool','mousemove','500','300'],check=True)
+        wait_for(lambda: visible_height() <= 4,'taskbar did not hide again')
         print('PASS: taskbar hidden edge, reveal above fullscreen, click restores minimized app, automatic rehide')
     finally:
         if d: d.close()

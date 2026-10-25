@@ -89,7 +89,7 @@ def main():
                XDG_CACHE_HOME=str(home / '.cache'),
                XDG_DATA_HOME=str(home / '.local/share'), LANG='C.UTF-8')
     if sys.argv[1] == 'panel':
-        os.execvpe('tint2', ['tint2', '-c', str(STATE / 'tint2rc')], env)
+        os.execvpe('python3', ['python3', '/taskbar_session.py'], env)
     os.execvpe('dbus-run-session', ['dbus-run-session', '--', 'pcmanfm',
                                  '--desktop', '--profile=stelab'], env)
 
