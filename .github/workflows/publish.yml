@@ -95,3 +95,12 @@ jobs:
         env:
           VERSION: ${{ steps.meta.outputs.version }}
         run: docker push "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}"
+      - name: Verify anonymous ARM64 pull
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          anonymous_config=$(mktemp -d)
+          trap 'rm -rf "$anonymous_config"' EXIT
+          docker image rm "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}"
+          docker --config "$anonymous_config" pull --platform linux/arm64 "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}"
+          test "$(docker image inspect --format '{{.Architecture}}' "ghcr.io/hstep/stelab-kiosk-aarch64:${VERSION}")" = arm64
