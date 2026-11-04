@@ -29,7 +29,7 @@ def make_overlay(d, root, panel):
     # Mark it unmanaged before unmap/reparent, so an autohide remap cannot
     # race Openbox into managing it again. Reparent + synthetic withdrawal is
     # the ICCCM handshake, including when the panel was already unmapped.
-    panel.change_attributes(override_redirect=True)
+    panel.change_attributes(override_redirect=True, event_mask=X.StructureNotifyMask)
     panel.unmap()
     panel.reparent(root, position.x, position.y)
     root.send_event(event.UnmapNotify(event=root, window=panel,
@@ -112,10 +112,20 @@ def main():
                 select.select([d.fileno()] + ([pidfd] if pidfd is not None else []),
                               [], [], None if pidfd is not None else 5)
             changed_atoms = set()
+            panel_unmapped = False
             while d.pending_events():
                 event = d.next_event()
+                if event.type == X.UnmapNotify and panel is not None and event.window.id == panel.id:
+                    panel_unmapped = True
                 if event.type == X.PropertyNotify and event.atom in watched:
                     changed_atoms.add(event.atom)
+            if panel_unmapped and panel is not None:
+                # A delayed WM withdrawal may arrive after make_overlay maps.
+                # tint2 autohides by resizing; its edge must remain mapped.
+                if panel.get_attributes().map_state == X.IsUnmapped:
+                    panel.map()
+                    panel.configure(stack_mode=X.Above)
+                    d.flush()
             if changed_atoms:
                 # Startup/output changes can re-manage or recreate tint2's
                 # window. Repair the boundary once, rather than fighting WM.

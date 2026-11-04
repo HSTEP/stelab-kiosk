@@ -79,6 +79,14 @@ def main():
                  and panel_window.query_tree().parent.id == d.screen().root.id,
                  'taskbar did not recover from window-manager takeover')
         time.sleep(1)
+        # A late window-manager unmap used to strand the hidden panel forever.
+        panel_window.unmap(); d.sync()
+        wait_for(lambda: panel_window.get_attributes().map_state == X.IsViewable,
+                 'taskbar did not remap after delayed unmap')
+        subprocess.run(['xdotool','mousemove','180','767'],check=True)
+        wait_for(lambda: visible_height() >= 40,'taskbar did not reveal after delayed unmap')
+        subprocess.run(['xdotool','mousemove','500','300'],check=True)
+        wait_for(lambda: visible_height() <= 4,'taskbar did not hide after delayed unmap')
         # Repeated notifications with identical data must not feed back into
         # XConfigureWindow -> Openbox -> property notification -> XConfigureWindow.
         root = d.screen().root

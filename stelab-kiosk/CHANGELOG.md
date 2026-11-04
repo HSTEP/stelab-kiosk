@@ -1,3 +1,9 @@
+# 0.1.0-rc.10
+
+- Update the pinned official ARM64 ChatGPT package to 26.1029.61003.
+- Recover the autohide taskbar if its edge is unexpectedly unmapped.
+- Preserve profiles, existing display idle behavior and settings across updates.
+
 # 0.1.0-rc.9
 
 - Minimize only the kiosk user's visible Chromium windows while the display is
