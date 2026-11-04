@@ -71,6 +71,20 @@ def raise_if_covered(root, panel):
     return False
 
 
+def recover_unmapped(d, root, panel, pid):
+    """Recover a hidden edge, or forget a panel destroyed by a tint2 restart."""
+    try:
+        if panel.get_attributes().map_state == X.IsUnmapped:
+            panel.map()
+            panel.configure(stack_mode=X.Above)
+            d.flush()
+        return panel
+    except error.BadWindow:
+        # A queued unmap can refer to a window tint2 has already destroyed.
+        # The replacement is handled by the next root property notification.
+        return find_panel(d, root, pid)
+
+
 def main():
     app = subprocess.Popen(['tint2', '-c', '/config/desktop/tint2rc'])
     d = None
@@ -122,10 +136,7 @@ def main():
             if panel_unmapped and panel is not None:
                 # A delayed WM withdrawal may arrive after make_overlay maps.
                 # tint2 autohides by resizing; its edge must remain mapped.
-                if panel.get_attributes().map_state == X.IsUnmapped:
-                    panel.map()
-                    panel.configure(stack_mode=X.Above)
-                    d.flush()
+                panel = recover_unmapped(d, root, panel, app.pid)
             if changed_atoms:
                 # Startup/output changes can re-manage or recreate tint2's
                 # window. Repair the boundary once, rather than fighting WM.

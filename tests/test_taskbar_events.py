@@ -33,3 +33,19 @@ class TaskbarEvents(unittest.TestCase):
         root.query_tree.return_value = SimpleNamespace(children=[panel,other])
         self.assertTrue(taskbar.raise_if_covered(root,panel))
         panel.configure.assert_called_once_with(stack_mode=X.Above)
+
+    def test_destroyed_panel_during_delayed_unmap_does_not_crash(self):
+        root = Mock(); d = Mock(); panel = Mock()
+        bad_window = taskbar.error.BadWindow.__new__(taskbar.error.BadWindow)
+        panel.get_attributes.side_effect = bad_window
+        with unittest.mock.patch.object(taskbar, 'find_panel', return_value=None) as lookup:
+            self.assertIsNone(taskbar.recover_unmapped(d, root, panel, 123))
+            lookup.assert_called_once_with(d, root, 123)
+
+    def test_unmapped_panel_is_mapped_and_raised(self):
+        root = Mock(); d = Mock(); panel = Mock()
+        panel.get_attributes.return_value = SimpleNamespace(map_state=X.IsUnmapped)
+        self.assertIs(taskbar.recover_unmapped(d, root, panel, 123),panel)
+        panel.map.assert_called_once_with()
+        panel.configure.assert_called_once_with(stack_mode=X.Above)
+        d.flush.assert_called_once_with()

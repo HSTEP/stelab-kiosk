@@ -1,3 +1,8 @@
+# 0.1.0-rc.11
+
+- Recover when tint2 destroys and recreates its window after a display change.
+- Keep the taskbar helper alive when a delayed unmap refers to a deleted window.
+
 # 0.1.0-rc.10
 
 - Update the pinned official ARM64 ChatGPT package to 26.1029.61003.
