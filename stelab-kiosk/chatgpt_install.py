@@ -38,7 +38,9 @@ def install():
                 temp = Path(folder)
                 archive = temp / 'chatgpt.deb'
                 digest = hashlib.sha256()
-                with urllib.request.urlopen(URL, timeout=60) as response, archive.open('wb') as out:
+                # The vendor CDN rejects Python's default user agent.
+                request = urllib.request.Request(URL, headers={'User-Agent': 'Mozilla/5.0 STELAB-Kiosk/1.0'})
+                with urllib.request.urlopen(request, timeout=60) as response, archive.open('wb') as out:
                     while True:
                         block = response.read(1024 * 1024)
                         if not block:
