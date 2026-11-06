@@ -12,7 +12,7 @@ A local touchscreen dashboard and lightweight desktop for **Home Assistant OS on
 - Optional remote view of the same desktop through authenticated Home Assistant Ingress; disabled by default.
 - Optional display timeout that detects visible, playing HTML video. Hidden/offscreen browser windows are suspended while the display is off to reduce unnecessary rendering.
 - Persistent browser login, application home, desktop configuration and an optional custom wallpaper.
-- GPU rendering using the existing Pi 5 V3D/Mesa stack was observed on the author's device. Hardware **video decoding** depends on the codec, browser and hardware and is not guaranteed.
+- On the author's Pi 5, Chromium reports V3D/Mesa GPU rendering and `Video Decode: enabled`. A 960×540 H.264 sample played using `FFmpegVideoDecoder` (software); a test H.265 sample was unsupported in that Chromium build. Do not assume hardware decoding for a particular video: the status alone is insufficient.
 
 This project builds on [WeLizard HAOS-kiosk](https://github.com/WeLizard/HAOS-kiosk), itself derived from [HAOS-kiosk](https://github.com/puterboy/HAOS-kiosk). It is independent of Home Assistant and OpenAI.
 
