@@ -21,6 +21,11 @@ if [ "$#" -ne 0 ]; then
     echo 'Usage: stelab-chatgpt' >&2
     exit 2
 fi
+if [ ! -x /config/stelab-chatgpt-runtime/current/usr/lib/chatgpt/codex-launcher ]; then
+    notify-send 'ChatGPT' 'Enable optional installation in STELAB Kiosk settings, then restart the app.' 2>/dev/null || true
+    echo 'ChatGPT is not installed yet; enable chatgpt_install in app settings.' >&2
+    exit 1
+fi
 # Allow this local X11 user only; never grant access to all hosts/users.
 xhost +SI:localuser:stelab-ai >/dev/null
 exec runuser -u stelab-ai -- env -i \

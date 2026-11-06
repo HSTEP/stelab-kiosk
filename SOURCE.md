@@ -35,3 +35,7 @@ Setup documentation: https://learn.chatgpt.com/docs/linux/linux-app
 Image-owned idle/video controller, touchscreen startup readiness and hotplug mapping,
 and the HA navigation/theme reload correction developed against the running Pi 5.
 Original imported hashes above remain provenance, not current-file checksums.
+
+## 1.0.0 preparation
+
+The optional official ChatGPT package is fetched directly from the vendor at runtime only when enabled. It is not bundled into the base image and is not relicensed as project source. The package URL, version and SHA-256 are pinned in `stelab-kiosk/chatgpt_install.py`; maintainers must review and update them in a future project release.

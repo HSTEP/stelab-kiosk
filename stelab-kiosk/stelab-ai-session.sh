@@ -8,4 +8,9 @@ if [ ! -e "$XDG_CONFIG_HOME/mimeapps.list" ]; then
     cp /usr/share/stelab-ai-mimeapps.list "$XDG_CONFIG_HOME/mimeapps.list"
 fi
 cd "$HOME/projects"
-exec dbus-run-session -- chatgpt --ozone-platform=x11 >> "$HOME/chatgpt.log" 2>&1
+APP=/config/stelab-chatgpt-runtime/current/usr/lib/chatgpt/codex-launcher
+if [ ! -x "$APP" ]; then
+    echo 'ChatGPT is not installed; enable the optional installation in app settings.' >&2
+    exit 1
+fi
+exec dbus-run-session -- "$APP" --ozone-platform=x11 >> "$HOME/chatgpt.log" 2>&1

@@ -1,3 +1,10 @@
+# 1.0.0 (prepared, pending release validation)
+
+- Make the official ChatGPT application an optional, verified download; preserve its existing home and projects.
+- Add settings for fullscreen startup and a custom desktop wallpaper.
+- Retain the rc.11 taskbar, touch, video-aware idle and remote access improvements.
+- Publish clear installation, privacy, feedback and hardware limitations.
+
 # 0.1.0-rc.11
 
 - Recover when tint2 destroys and recreates its window after a display change.

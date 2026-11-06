@@ -1,0 +1,36 @@
+name: Bug report
+description: Report something that does not work in STELAB Kiosk
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove passwords, tokens, IP addresses, private URLs and personal information from logs and screenshots."
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Kiosk version and Home Assistant OS version
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Raspberry Pi, display and input devices
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs, with private information removed
+      render: text
