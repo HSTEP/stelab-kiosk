@@ -71,6 +71,7 @@ jobs:
               apt-get update -qq
               apt-get install -y --no-install-recommends xvfb
               python3 /tests/smoke_remote_access.py
+              python3 /chatgpt_install.py
               python3 /tests/smoke_chatgpt.py
               python3 /tests/smoke_kiosk_sandbox.py
               python3 /tests/smoke_desktop.py

@@ -8,4 +8,13 @@ configuration:
     description: "Pro STELAB Remote ponechte prázdné. Neprázdná hodnota navíc zapne původní LAN VNC na portu 5900; pomlčka vypíná jeho heslo."
   chatgpt_autostart:
     name: "ChatGPT při spuštění"
-    description: "Spustí ChatGPT na pozadí při startu doplňku. Dashboard zůstane navrchu. Výchozí stav zapnuto; po změně restartujte doplněk."
+    description: "Volitelně nainstaluje a spustí ChatGPT na pozadí; dashboard zůstane navrchu. Pro nové instalace je vypnuto."
+  chatgpt_install:
+    name: "Nainstalovat ChatGPT"
+    description: "Volitelně stáhne oficiální aplikaci (asi 535 MB; po instalaci přes 1,7 GB). Instalace i online funkce vyžadují internet."
+  dashboard_fullscreen:
+    name: "Dashboard přes celou obrazovku"
+    description: "Po spuštění otevře Chromium přes celou obrazovku."
+  wallpaper_file:
+    name: "Vlastní pozadí plochy"
+    description: "Volitelná cesta k obrázku PNG, JPG nebo WebP v /share nebo /media. Prázdné ponechá stávající pozadí."

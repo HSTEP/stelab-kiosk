@@ -47,7 +47,9 @@ keyboard = ET.fromstring('<keyboard>' + keybinds + '</keyboard>')
 keys = [node.attrib['key'] for node in keyboard]
 assert len(keys) == len(set(keys))
 assert {'W-Down', 'W-Up', 'W-Return', 'W-e', 'W-d'} <= set(keys)
-assert '--start-fullscreen' in run and '\n                --kiosk\n' not in run
+assert 'BROWSER_FLAGS+=(--start-fullscreen)' in run and '\n                --kiosk\n' not in run
+assert not config['options']['chatgpt_install'] and not config['options']['chatgpt_autostart']
+assert config['options']['dashboard_fullscreen']
 assert '--no-sandbox' not in run
 assert 'chromium-sandbox' in dockerfile
 assert '--disable-gpu\n' not in run and '--use-angle=swiftshader' not in run

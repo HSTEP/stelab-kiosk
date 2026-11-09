@@ -1,0 +1,10 @@
+name: Feature request or feedback
+description: Share an idea or tell us about your experience
+body:
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Your idea or feedback
+      description: Describe the use case and how the kiosk could help.
+    validations:
+      required: true

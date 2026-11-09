@@ -1,5 +1,14 @@
 ---
 configuration:
+  chatgpt_install:
+    name: "Install ChatGPT"
+    description: "Optionally download the official application (about 535 MB; over 1.7 GB installed). Internet access is needed for installation."
+  dashboard_fullscreen:
+    name: "Fullscreen dashboard on startup"
+    description: "Start the dashboard browser in fullscreen mode."
+  wallpaper_file:
+    name: "Custom desktop wallpaper"
+    description: "Optional PNG, JPEG or WebP file under /share or /media. Leave empty to retain the current wallpaper."
   ha_username:
     name: "HA Username"
     description: "Home Assistant login user name [Required]"
@@ -161,4 +170,4 @@ configuration:
     description: "preload: Welizard Debian compatibility library for Xorg only; native: direct VT access. Hardware test required."
   chatgpt_autostart:
     name: "Start ChatGPT at boot"
-    description: "Launch ChatGPT minimized once at add-on startup, keeping the configured dashboard in front. Enabled by default; restart after changing."
+    description: "Optionally install and launch ChatGPT minimized at startup, keeping the dashboard in front. Disabled by default for new installs."

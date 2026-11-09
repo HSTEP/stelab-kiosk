@@ -6,9 +6,7 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=0.1.0-rc.11
-ARG CHATGPT_VERSION=26.1029.61003
-ARG CHATGPT_SHA256=4719adfb33fe68e7becdb8169cea5945a297ebb7e3aa9966de7c2a945242bc2b
+ARG BUILD_VERSION=1.0.0
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \
     S6_SERVICES_GRACETIME=25000 S6_KILL_GRACETIME=15000
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -21,24 +19,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unclutter-xfixes fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji \
     chromium chromium-sandbox pulseaudio-utils libasound2-plugins \
     python3 python3-xlib python3-aiohttp python3-venv git bubblewrap x11vnc novnc \
+    libnotify4 libcups2t64 libtss2-esys-3.0.2-0t64 libtss2-mu-4.0.1-0t64 \
+    libtss2-tcti-device0t64 mesa-vulkan-drivers xdg-utils \
     && rm -rf /var/lib/apt/lists/*
-# Pin the official vendor package, architecture and bytes for repeatable builds.
-RUN curl -fSL --proto '=https' --tlsv1.2 --retry 3 \
-      "https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_${CHATGPT_VERSION}_arm64.deb" \
-      -o /tmp/chatgpt.deb \
-    && echo "${CHATGPT_SHA256}  /tmp/chatgpt.deb" | sha256sum -c - \
-    && test "$(dpkg-deb -f /tmp/chatgpt.deb Architecture)" = arm64 \
-    && test "$(dpkg-deb -f /tmp/chatgpt.deb Version)" = "${CHATGPT_VERSION}" \
-    && apt-get update && apt-get install -y --no-install-recommends /tmp/chatgpt.deb \
-    && rm /tmp/chatgpt.deb && rm -rf /var/lib/apt/lists/* \
-    && useradd --uid 1000 --user-group --home-dir /config/chatgpt/home \
+RUN useradd --uid 1000 --user-group --home-dir /config/chatgpt/home \
        --no-create-home --shell /bin/bash stelab-ai \
     && useradd --uid 1001 --user-group --home-dir /config/chromium-home \
        --no-create-home --shell /usr/sbin/nologin stelab-browser
 COPY --from=vtbuild /tmp/tty0_override.so /usr/lib/tty0_override.so
 COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
-COPY browser_visibility.py taskbar_session.py timezone_config.py chatgpt_autostart.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
+COPY browser_visibility.py taskbar_session.py timezone_config.py chatgpt_autostart.py chatgpt_install.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run
@@ -52,16 +43,18 @@ COPY stelab-ai-browser.desktop /usr/share/applications/stelab-ai-browser.desktop
 COPY stelab-ai-mimeapps.list /usr/share/stelab-ai-mimeapps.list
 COPY openbox-menu.xml /etc/xdg/openbox/stelab-menu.xml
 RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop /usr/local/bin/stelab-chatgpt /usr/local/bin/stelab-ai-session /usr/local/bin/stelab-ai-browser \
+    && mkdir -p /usr/share/pixmaps \
+    && ln -s /config/stelab-chatgpt-runtime/current/usr/share/pixmaps/chatgpt.png /usr/share/pixmaps/chatgpt.png \
     && test -x /usr/lib/xorg/Xorg \
     && command -v bashio && command -v xprop && command -v xterm \
     && command -v pcmanfm && command -v mousepad && command -v onboard \
-    && command -v chatgpt && command -v bwrap && command -v runuser \
+    && command -v bwrap && command -v runuser && command -v dpkg-deb \
     && python3 -c 'import aiohttp, Xlib' \
     && test -f /usr/share/novnc/vnc.html \
     && test -f /usr/share/novnc/core/rfb.js \
     && test -e /usr/lib/aarch64-linux-gnu/dri/v3d_dri.so \
     && chromium --version \
-    && dpkg-query -W chromium libgl1-mesa-dri libegl-mesa0 chatgpt > /etc/stelab-build-packages.txt
+    && dpkg-query -W chromium libgl1-mesa-dri libegl-mesa0 > /etc/stelab-build-packages.txt
 LABEL io.hass.name="STELAB Kiosk" \
       io.hass.description="Chromium and lightweight Debian desktop for HAOS" \
       io.hass.type="addon" io.hass.arch="aarch64" \

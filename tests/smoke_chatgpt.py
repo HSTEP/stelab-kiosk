@@ -91,7 +91,7 @@ for directory in Path('/proc').iterdir():
         continue
     try:
         executable = (directory/'exe').readlink()
-        if str(executable) != '/usr/lib/chatgpt/ChatGPT':
+        if str(executable) != '/config/stelab-chatgpt-runtime/26.1029.61003/usr/lib/chatgpt/ChatGPT':
             continue
         argv = (directory/'cmdline').read_bytes().split(b'\0')
         env = (directory/'environ').read_bytes()

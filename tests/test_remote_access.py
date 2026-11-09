@@ -19,7 +19,7 @@ class PeerTests(unittest.TestCase):
     def test_only_supervisor_transport_peer_is_trusted(self):
         self.assertTrue(remote.trusted_peer('172.30.32.2'))
         self.assertTrue(remote.trusted_peer('::ffff:172.30.32.2'))
-        for peer in (None, '', '127.0.0.1', '::1', '172.30.32.3', '192.168.1.2', '172.30.32.2.evil'):
+        for peer in (None, '', '127.0.0.1', '::1', '172.30.32.3', '192.0.2.1', '172.30.32.2.evil'):
             self.assertFalse(remote.trusted_peer(peer), peer)
 
 

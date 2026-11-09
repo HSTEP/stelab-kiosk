@@ -2,6 +2,7 @@
 """Persistent PCManFM desktop, seeded once and launched without HA credentials."""
 import os
 from pathlib import Path
+import re
 import shutil
 import sys
 
@@ -10,7 +11,7 @@ ASSETS = Path('/usr/share/stelab-desktop')
 LAUNCHERS = [
     ('01-dashboard', 'Dashboard', '/usr/local/bin/stelab-desktop dashboard', 'chromium'),
     ('02-web', 'Web', '/usr/local/bin/stelab-desktop web', 'chromium'),
-    ('03-chatgpt', 'ChatGPT', '/usr/local/bin/stelab-chatgpt', '/usr/share/pixmaps/chatgpt.png'),
+    ('03-chatgpt', 'ChatGPT', '/usr/local/bin/stelab-chatgpt', 'applications-science'),
     ('04-files', 'Soubory', '/usr/local/bin/stelab-desktop files', 'system-file-manager'),
     ('05-terminal', 'Terminál', '/usr/local/bin/stelab-desktop terminal', 'utilities-terminal'),
     ('06-shared', 'Sdílené soubory', '/usr/local/bin/stelab-desktop shared', 'folder-remote'),
@@ -25,6 +26,21 @@ def seed(path, content, mode=0o600):
         path.chmod(mode)
     except FileExistsError:
         pass
+
+def apply_wallpaper(chosen, settings, allowed):
+    source = Path(chosen).resolve(strict=True)
+    if (not any(source.is_relative_to(root.resolve()) for root in allowed)
+            or not source.is_file() or source.suffix.lower() not in ('.png', '.jpg', '.jpeg', '.webp')
+            or '\n' in str(source)):
+        raise ValueError('Wallpaper must be a PNG, JPEG or WebP image inside /share or /media')
+    if settings.is_symlink():
+        raise ValueError('Refusing symlinked desktop settings')
+    text = settings.read_text()
+    text, count = re.subn(r'^wallpaper=.*$', lambda _: f'wallpaper={source}', text, count=1, flags=re.M)
+    if count != 1:
+        raise ValueError('Desktop settings are missing the wallpaper field')
+    settings.write_text(text)
+
 
 def prepare():
     home = STATE / 'home'
@@ -55,6 +71,14 @@ show_documents=0
 show_trash=0
 show_mounts=0
 ''')
+    # A configured file is opt-in. An empty setting preserves an existing
+    # wallpaper and all user-managed desktop settings across upgrades.
+    chosen = os.environ.get('STELAB_WALLPAPER_FILE', '').strip()
+    if chosen:
+        try:
+            apply_wallpaper(chosen, profile / 'desktop-items-0.conf', [Path('/share'), Path('/media')])
+        except (OSError, ValueError) as error:
+            print(f'Wallpaper unchanged: {error}', file=sys.stderr, flush=True)
     # Touch and mouse both open launchers with one click.
     libfm = home / '.config/libfm'
     libfm.mkdir(exist_ok=True)

@@ -41,8 +41,10 @@ class BackgroundStartup(unittest.TestCase):
 
     def test_only_boot_path_launches_ai(self):
         run = (ADDON/'run.sh').read_text()
-        self.assertEqual(run.count('python3 -u /chatgpt_autostart.py &'), 1)
-        self.assertLess(run.index('/chatgpt_autostart.py &'), run.index('    BROWSER_STARTED=true'))
+        self.assertEqual(run.count('python3 -u /chatgpt_autostart.py'), 1)
+        self.assertLess(run.index('/chatgpt_autostart.py'), run.index('    BROWSER_STARTED=true'))
+        self.assertIn("CHATGPT_AUTOSTART=\"$(bashio::config 'chatgpt_autostart')\"", run)
+        self.assertIn('python3 -u /chatgpt_install.py &&', run)
         self.assertNotIn('chatgpt_autostart', (ADDON/'stelab-desktop.sh').read_text())
 
 if __name__ == '__main__':

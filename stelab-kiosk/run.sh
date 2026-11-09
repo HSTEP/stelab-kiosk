@@ -235,7 +235,6 @@ resolve_browser_binary() {
                 --disk-cache-size=1
                 --media-cache-size=1
                 --window-position=0,0
-                --start-fullscreen
                 --ozone-platform=x11
                 --touch-events=enabled
                 --enable-gpu-rasterization
@@ -243,6 +242,9 @@ resolve_browser_binary() {
                 --use-gl="$CHROMIUM_GL_MODE"
                 --use-angle="$CHROMIUM_ANGLE_BACKEND"
             )
+            if [ "$(bashio::config 'dashboard_fullscreen')" != false ]; then
+                BROWSER_FLAGS+=(--start-fullscreen)
+            fi
             BROWSER_PROCESS_MATCH='chromium'
             ;;
         luakit)
@@ -525,6 +527,7 @@ fi
 bashio::log.info "$WINMGR window manager started successfully..."
 
 # PCManFM draws wallpaper and launchers below the existing application windows.
+export STELAB_WALLPAPER_FILE="$(bashio::config 'wallpaper_file')"
 python3 /desktop_session.py run &
 DESKTOP_PID=$!
 sleep 0.5
@@ -785,8 +788,14 @@ if [ "$DEBUG_MODE" != true ]; then
 
     # Start once per add-on boot, never in the browser reopen/watchdog path.
     # The bounded helper minimizes the app even if it maps after Chromium.
-    if [ "$(bashio::config 'chatgpt_autostart')" != false ]; then
-        python3 -u /chatgpt_autostart.py &
+    CHATGPT_AUTOSTART="$(bashio::config 'chatgpt_autostart')"
+    CHATGPT_INSTALL="$(bashio::config 'chatgpt_install')"
+    if [ "$CHATGPT_INSTALL" = true ] || [ "$CHATGPT_AUTOSTART" = true ]; then
+        (
+            if python3 -u /chatgpt_install.py && [ "$CHATGPT_AUTOSTART" = true ]; then
+                python3 -u /chatgpt_autostart.py
+            fi
+        ) &
     fi
 
     BROWSER_STARTED=true
