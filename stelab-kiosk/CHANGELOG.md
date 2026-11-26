@@ -1,3 +1,8 @@
+# 1.0.1
+
+- Add built-in `ai_agents_monitor.py` daemon to publish live AI agent telemetry (`sensor.stelab_ai_agents`) directly to Home Assistant on startup.
+- Add Antigravity (`agy`) symlink (`/usr/local/bin/agy`) and automatic startup alongside ChatGPT on container boot.
+
 # 1.0.0 (prepared, pending release validation)
 
 - Make the official ChatGPT application an optional, verified download; preserve its existing home and projects.

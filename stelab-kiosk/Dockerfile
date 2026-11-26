@@ -6,7 +6,7 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=1.0.0
+ARG BUILD_VERSION=1.0.1
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \
     S6_SERVICES_GRACETIME=25000 S6_KILL_GRACETIME=15000
 RUN apt-get update && apt-get install -y --no-install-recommends \
