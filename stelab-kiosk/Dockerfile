@@ -6,7 +6,7 @@ COPY tty0_override.c /tmp/tty0_override.c
 RUN gcc -Wall -shared -fPIC -o /tmp/tty0_override.so /tmp/tty0_override.c -ldl
 
 FROM ${BUILD_FROM}
-ARG BUILD_VERSION=1.0.1
+ARG BUILD_VERSION=1.0.2
 ENV ADDON_VERSION=${BUILD_VERSION} DISPLAY=:0 \
     S6_SERVICES_GRACETIME=25000 S6_KILL_GRACETIME=15000
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -32,6 +32,7 @@ COPY translations/ /translations/
 COPY browser_visibility.py taskbar_session.py timezone_config.py chatgpt_autostart.py chatgpt_install.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
 COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py ai_agents_monitor.py gesture_commands.json /
+COPY agy-autostart.sh /usr/local/bin/stelab-agy-autostart
 COPY s6-run.sh /etc/services.d/stelab/run
 COPY kiosk-ui.sh /usr/local/bin/kiosk-ui
 COPY stelab-browser.sh /usr/local/bin/stelab-browser
@@ -42,14 +43,14 @@ COPY stelab-ai-browser.sh /usr/local/bin/stelab-ai-browser
 COPY stelab-ai-browser.desktop /usr/share/applications/stelab-ai-browser.desktop
 COPY stelab-ai-mimeapps.list /usr/share/stelab-ai-mimeapps.list
 COPY openbox-menu.xml /etc/xdg/openbox/stelab-menu.xml
-RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop /usr/local/bin/stelab-chatgpt /usr/local/bin/stelab-ai-session /usr/local/bin/stelab-ai-browser \
+RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop /usr/local/bin/stelab-chatgpt /usr/local/bin/stelab-ai-session /usr/local/bin/stelab-ai-browser /usr/local/bin/stelab-agy-autostart \
     && mkdir -p /usr/share/pixmaps \
     && ln -s /config/stelab-chatgpt-runtime/current/usr/share/pixmaps/chatgpt.png /usr/share/pixmaps/chatgpt.png \
     && ln -sf /config/scripts/start-agy.sh /usr/local/bin/agy \
     && test -x /usr/lib/xorg/Xorg \
     && command -v bashio && command -v xprop && command -v xterm \
     && command -v pcmanfm && command -v mousepad && command -v onboard \
-    && command -v bwrap && command -v runuser && command -v dpkg-deb \
+    && command -v bwrap && command -v script && command -v runuser && command -v dpkg-deb \
     && python3 -c 'import aiohttp, Xlib' \
     && test -f /usr/share/novnc/vnc.html \
     && test -f /usr/share/novnc/core/rfb.js \

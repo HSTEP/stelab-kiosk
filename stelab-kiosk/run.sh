@@ -807,7 +807,7 @@ if [ "$DEBUG_MODE" != true ]; then
     bashio::log.info "Launching AI agents monitor (PID=$AI_AGENTS_MONITOR_PID)"
 
     if [ -x /config/scripts/start-agy.sh ]; then
-        /config/scripts/start-agy.sh >/config/chatgpt/home/agy-autostart.log 2>&1 &
+        /usr/local/bin/stelab-agy-autostart /config/scripts/start-agy.sh &
         bashio::log.info "Launching Antigravity autostart (PID=$!)"
     fi
 

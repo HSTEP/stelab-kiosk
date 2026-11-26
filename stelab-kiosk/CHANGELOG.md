@@ -1,3 +1,8 @@
+# 1.0.2
+
+- Give the optional Antigravity autostart a pseudoterminal and request resuming the last conversation.
+- Keep terminal output, including remote connection links, out of kiosk logs.
+
 # 1.0.1
 
 - Add built-in `ai_agents_monitor.py` daemon to publish live AI agent telemetry (`sensor.stelab_ai_agents`) directly to Home Assistant on startup.

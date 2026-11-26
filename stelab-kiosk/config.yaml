@@ -1,7 +1,7 @@
 {
   "name": "STELAB Kiosk",
   "description": "Debian desktop kiosk for Raspberry Pi 5: Chromium, Openbox, terminal and file manager.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "slug": "stelab_kiosk",
   "arch": [
     "aarch64"
