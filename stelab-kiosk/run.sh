@@ -80,6 +80,10 @@ cleanup() {
         kill -TERM "$DISPLAY_IDLE_PID"
         wait "$DISPLAY_IDLE_PID" || true
     fi
+    if [ -n "${AI_AGENTS_MONITOR_PID:-}" ] && kill -0 "$AI_AGENTS_MONITOR_PID" 2>/dev/null; then
+        kill -TERM "$AI_AGENTS_MONITOR_PID"
+        wait "$AI_AGENTS_MONITOR_PID" || true
+    fi
     # Let Chromium flush Preferences and cookies while Xorg and session D-Bus live.
     if [ "${BROWSER_STARTED:-false}" = true ]; then
         python3 /browser_profile.py close --profile "$CHROMIUM_PROFILE_DIR" --port "$CHROMIUM_DEVTOOLS_PORT" || true
@@ -796,6 +800,15 @@ if [ "$DEBUG_MODE" != true ]; then
                 python3 -u /chatgpt_autostart.py
             fi
         ) &
+    fi
+
+    python3 -u /ai_agents_monitor.py &
+    AI_AGENTS_MONITOR_PID=$!
+    bashio::log.info "Launching AI agents monitor (PID=$AI_AGENTS_MONITOR_PID)"
+
+    if [ -x /config/scripts/start-agy.sh ]; then
+        /config/scripts/start-agy.sh >/config/chatgpt/home/agy-autostart.log 2>&1 &
+        bashio::log.info "Launching Antigravity autostart (PID=$!)"
     fi
 
     BROWSER_STARTED=true
