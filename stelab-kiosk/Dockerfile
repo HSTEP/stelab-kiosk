@@ -31,7 +31,7 @@ COPY xorg.conf.default /etc/X11/xorg.conf.default
 COPY translations/ /translations/
 COPY browser_visibility.py taskbar_session.py timezone_config.py chatgpt_autostart.py chatgpt_install.py stelab_display_idle.py touch_inputs.py browser_profile.py startup_ports.py remote_access.py desktop_session.py kiosk_browser.py /
 COPY desktop/ /usr/share/stelab-desktop/
-COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py gesture_commands.json /
+COPY run.sh browser_ctl.py chromium_watchdog.py mouse_touch_inputs.py rest_server.py ai_agents_monitor.py gesture_commands.json /
 COPY s6-run.sh /etc/services.d/stelab/run
 COPY kiosk-ui.sh /usr/local/bin/kiosk-ui
 COPY stelab-browser.sh /usr/local/bin/stelab-browser
@@ -45,6 +45,7 @@ COPY openbox-menu.xml /etc/xdg/openbox/stelab-menu.xml
 RUN chmod 755 /etc/services.d/stelab/run /usr/local/bin/stelab-browser /run.sh /usr/local/bin/kiosk-ui /usr/local/bin/stelab-desktop /usr/local/bin/stelab-chatgpt /usr/local/bin/stelab-ai-session /usr/local/bin/stelab-ai-browser \
     && mkdir -p /usr/share/pixmaps \
     && ln -s /config/stelab-chatgpt-runtime/current/usr/share/pixmaps/chatgpt.png /usr/share/pixmaps/chatgpt.png \
+    && ln -sf /config/scripts/start-agy.sh /usr/local/bin/agy \
     && test -x /usr/lib/xorg/Xorg \
     && command -v bashio && command -v xprop && command -v xterm \
     && command -v pcmanfm && command -v mousepad && command -v onboard \
